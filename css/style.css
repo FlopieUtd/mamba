@@ -1,0 +1,53 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	font-family: monospace;
+	background: black;
+	font-family: Courier;
+	font-weight: 700;
+}
+
+.menu {
+	background: blue;
+	width: 1248px;
+	height: 32px;
+	max-width: 100%;
+	display: flex;
+	justify-content: space-between;	
+	font-size: 1.8rem;
+	color: white;
+}
+
+.name {
+	background: red;
+	height: 100%;
+	color: yellow;
+	padding: 0 1rem;
+}
+
+.scoreboard {
+	display: flex;
+	justify-content: flex-end
+}
+
+#score {
+	background: red;
+	color: yellow;
+	min-width: 100px;
+	text-align: right;
+	margin-left: 1rem;
+}
+
+.canvas {
+	background: black;
+	max-width: 100%;	
+}
