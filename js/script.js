@@ -8,6 +8,7 @@ const mamba_game = (function () {
 	const widthInBlocks = canvasWidth / blockSize;
 	const heightInBlocks = canvasHeight / blockSize;
 	[canvas.width, canvas.height] = [canvasWidth, canvasHeight];
+	let pause = false;
 	function init () {
 		document.querySelector('body').appendChild(canvas);
 		bindEvents();												// Draw the mamba
@@ -24,6 +25,9 @@ const mamba_game = (function () {
 			mamba.retreat();
 			mamba.draw(ctx);
 			gameOver();
+			return
+		}
+		if (pause == true) {
 			return
 		}
 		setTimeout(gameLoop, frameLength);							// Repeat after frameLength milliseconds
@@ -94,6 +98,15 @@ const mamba_game = (function () {
 			if (direction) {
 				mamba.setDirection(direction);
 				e.preventDefault();
+			}
+			if (key == 80) {
+				console.log('pause');
+				if (pause == false) {
+					pause = true;
+				} else {
+					pause = false;
+					gameLoop();
+				}
 			}
 		});
 	}
@@ -166,7 +179,7 @@ const mamba_game = (function () {
 						food.removeFood(positionArray[0]);
 						food.addFood();
 						score.increaseScore(1);
-						wall.decrementLifeSpan();
+						wall.decrementLifeSpan(1);
 						wall.removeWall();
 						food.decrementRemoveCounter();
 					}
@@ -178,6 +191,8 @@ const mamba_game = (function () {
 						turboFood.removeTurboFood(positionArray[0]);
 						food.addFood();
 						score.increaseScore(10);
+						wall.decrementLifeSpan(0.5);
+						wall.removeWall();
 					}
 				});
 			}
@@ -274,7 +289,6 @@ const mamba_game = (function () {
 				foodPositions.splice(index, 1);
 				removeCounter = 25;
 			}
-			console.log(removeCounter);
 		}
 
 		function draw(ctx) {
@@ -352,13 +366,14 @@ const mamba_game = (function () {
 			})			
 		}
 
-		function decrementLifeSpan () {
+		function decrementLifeSpan (value) {
 			walls.forEach(function (array) {
 				array.forEach(function (item) {
 					lifeSpan = item[2];
-					lifeSpan--;
+					lifeSpan -= value;
 					item.pop();
 					item.push(lifeSpan);
+					console.log(lifeSpan);
 				});
 			});
 		}
