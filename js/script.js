@@ -3,7 +3,7 @@ const mamba_game = (function () {
 	const ctx = canvas.getContext('2d');
 	const canvasWidth = 1248;
 	const canvasHeight = 768;
-	const frameLength = 90; 										// Sets speed of the game 
+	const frameLength = 100; 										// Sets speed of the game 
 	const blockSize = 32;
 	const widthInBlocks = canvasWidth / blockSize;
 	const heightInBlocks = canvasHeight / blockSize;
@@ -11,6 +11,7 @@ const mamba_game = (function () {
 	function init () {
 		document.querySelector('body').appendChild(canvas);
 		bindEvents();												// Draw the mamba
+		mamba.setWallThreshold();
 		gameLoop();													// Start the game loop
 	}
 
@@ -34,7 +35,7 @@ const mamba_game = (function () {
 
 	function checkCoordinateInArray (coord, array) {
 		let isInArray = false;
-		array.forEach(item => {
+		array.forEach(function(item) {
 			if (equalCoordinates(coord, item)) {
 				isInArray = true;
 			}
@@ -73,7 +74,7 @@ const mamba_game = (function () {
 		];
 		ctx.beginPath();
 		ctx.moveTo(corners[3][0], corners[3][1]);
-		corners.forEach(corner => {
+		corners.forEach(function(corner) {
 			ctx.lineTo(corner[0], corner[1]);
 		});
 		ctx.stroke();
@@ -108,7 +109,10 @@ const mamba_game = (function () {
 		positionArray.push([2, 2]);
 		let direction = 'right';									// The direction in which the mamba will advance
 		let nextDirection = direction;
-		let wallThreshold = 20;
+		let wallThreshold;
+		function setWallThreshold () {
+			wallThreshold = random(18, 36);
+		}
 
 		function setDirection (newDirection) {						// Prevents the mamba from turning into itself
 			let allowedDirections;
@@ -156,7 +160,7 @@ const mamba_game = (function () {
 				let foodPositions = food.getPositions();
 				let turboFoodPositions = turboFood.getPositions();
 
-				foodPositions.forEach(position => {
+				foodPositions.forEach(function(position) {
 					if (equalCoordinates(positionArray[0], position)) {
 						grow(positionArray);
 						food.removeFood(positionArray[0]);
@@ -167,7 +171,7 @@ const mamba_game = (function () {
 					}
 				});
 
-				turboFoodPositions.forEach(position => {
+				turboFoodPositions.forEach(function(position) {
 					if (equalCoordinates(positionArray[0], position)) {
 						grow(positionArray);
 						turboFood.removeTurboFood(positionArray[0]);
@@ -184,7 +188,7 @@ const mamba_game = (function () {
 
 			if (positionArray.length >= wallThreshold) {
 				newWallArray = positionArray.splice(6);
-				newWallArray.forEach(item => {
+				newWallArray.forEach(function (item) {
 					item.push(random(10, 100));
 				})
 				wall.addWall(newWallArray);
@@ -204,7 +208,7 @@ const mamba_game = (function () {
 		function draw (ctx) {										// Draw the mamba
 			ctx.save();
 			ctx.fillStyle = 'yellow';
-			positionArray.forEach(pos => {
+			positionArray.forEach(function (pos) {
 				drawSection(ctx, pos);
 			});
 			ctx.restore();
@@ -243,7 +247,8 @@ const mamba_game = (function () {
 			setDirection: setDirection,
 			checkCollision: checkCollision,
 			retreat: retreat,
-			positionArray: positionArray
+			positionArray: positionArray,
+			setWallThreshold: setWallThreshold
 		}
 
 	})();
@@ -254,13 +259,16 @@ const mamba_game = (function () {
 		let foodPositions = [];
 
 		for (i = 0; i < amount; i++) {
-			foodPositions.push(getRandomPosition());
+			let coordinate = getRandomPosition();
+			if (!checkCoordinateInArray(coordinate, mamba.positionArray)) {
+				foodPositions.push(coordinate);
+			}
 		}
 
 		function draw(ctx) {
 			ctx.save();
 			ctx.fillStyle = 'cyan';
-			foodPositions.forEach(pos => {
+			foodPositions.forEach(function (pos) {
 				ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 			});
 			ctx.restore();
@@ -282,7 +290,7 @@ const mamba_game = (function () {
 		}
 
 		function removeFood (coordinate) {
-			foodPositions.forEach((foodPosition, index) => {
+			foodPositions.forEach(function (foodPosition, index) {
 				if ((foodPosition[0] == coordinate[0]) && (foodPosition[1] == coordinate[1])) {
 					foodPositions.splice(index, 1);
 				}
@@ -324,16 +332,16 @@ const mamba_game = (function () {
 
 		function updateWallPositions () {
 			wallPositions = [];
-			walls.forEach(array => {
-				array.forEach(coord => {
+			walls.forEach(function (array) {
+				array.forEach(function (coord) {
 					wallPositions.push(coord);
 				})
 			})			
 		}
 
 		function decrementLifeSpan () {
-			walls.forEach(array => {
-				array.forEach((item) => {
+			walls.forEach(function (array) {
+				array.forEach(function (item) {
 					lifeSpan = item[2];
 					lifeSpan--;
 					item.pop();
@@ -343,8 +351,8 @@ const mamba_game = (function () {
 		}
 
 		function removeWall () {
-			walls.forEach(array => {
-				array.forEach((item, index) => {
+			walls.forEach(function (array) {
+				array.forEach(function (item, index) {
 					lifeSpan = item[2];
 					if (lifeSpan <= 0) {
 						const turboFoodCoordinate = [];
@@ -367,8 +375,8 @@ const mamba_game = (function () {
 		function draw(ctx) {
 			ctx.save();
 			ctx.fillStyle = 'lightCoral';
-			walls.forEach(singleWall => {
-				singleWall.forEach(pos => {
+			walls.forEach(function (singleWall) {
+				singleWall.forEach(function (pos) {
 					ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 				});
 			});
@@ -393,20 +401,19 @@ const mamba_game = (function () {
 
 		function addTurboFood (coordinate) {
 			turboFoodPositions.push(coordinate);
-			console.log(coordinate);
 		}
 
 		function draw(ctx) {
 			ctx.save();
 			ctx.fillStyle = 'lime';
-			turboFoodPositions.forEach(pos => {
+			turboFoodPositions.forEach(function (pos) {
 				ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 			});
 			ctx.restore();
 		}
 
 		function removeTurboFood (coordinate) {
-			turboFoodPositions.forEach((foodPosition, index) => {
+			turboFoodPositions.forEach(function (foodPosition, index) {
 				if ((foodPosition[0] == coordinate[0]) && (foodPosition[1] == coordinate[1])) {
 					turboFoodPositions.splice(index, 1);
 				}
