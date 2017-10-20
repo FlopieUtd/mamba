@@ -168,6 +168,7 @@ const mamba_game = (function () {
 						score.increaseScore(1);
 						wall.decrementLifeSpan();
 						wall.removeWall();
+						food.decrementRemoveCounter();
 					}
 				});
 
@@ -250,19 +251,30 @@ const mamba_game = (function () {
 			positionArray: positionArray,
 			setWallThreshold: setWallThreshold
 		}
-
 	})();
 
 	const food = (function(){
 
 		let amount = 5;
 		let foodPositions = [];
+		let removeCounter = 25;
 
 		for (i = 0; i < amount; i++) {
 			let coordinate = getRandomPosition();
 			if (!checkCoordinateInArray(coordinate, mamba.positionArray)) {
 				foodPositions.push(coordinate);
 			}
+		}
+
+		function decrementRemoveCounter () {
+			removeCounter--;
+			if (removeCounter <= 0) {
+				foodAmount = foodPositions.length;
+				index = random(0, foodAmount);
+				foodPositions.splice(index, 1);
+				removeCounter = 25;
+			}
+			console.log(removeCounter);
 		}
 
 		function draw(ctx) {
@@ -321,7 +333,8 @@ const mamba_game = (function () {
 			setNewPosition: setNewPosition,
 			getPositions: getPositions,
 			removeFood: removeFood,
-			addFood: addFood
+			addFood: addFood,
+			decrementRemoveCounter: decrementRemoveCounter
 		};
 	})();
 
