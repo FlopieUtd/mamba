@@ -1,6 +1,7 @@
 * {
 	margin: 0;
 	padding: 0;
+	box-sizing: border-box;
 }
 
 body {
@@ -50,4 +51,6 @@ body {
 .canvas {
 	background: black;
 	max-width: 100%;	
+	border: 32px solid blue;
+	border-top: 0;
 }
