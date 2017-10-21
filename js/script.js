@@ -1,7 +1,7 @@
 const mamba_game = (function () {
 	const canvas = document.querySelector('.canvas');
 	const ctx = canvas.getContext('2d');
-	const canvasWidth = 1248;
+	const canvasWidth = 1312;
 	const canvasHeight = 768;
 	const frameLength = 100; 										// Sets speed of the game 
 	const blockSize = 32;
@@ -10,7 +10,6 @@ const mamba_game = (function () {
 	[canvas.width, canvas.height] = [canvasWidth, canvasHeight];
 	let pause = false;
 	function init () {
-		document.querySelector('body').appendChild(canvas);
 		bindEvents();												// Draw the mamba
 		mamba.setWallThreshold();
 		gameLoop();													// Start the game loop
@@ -100,7 +99,6 @@ const mamba_game = (function () {
 				e.preventDefault();
 			}
 			if (key == 80) {
-				console.log('pause');
 				if (pause == false) {
 					pause = true;
 				} else {
@@ -123,6 +121,8 @@ const mamba_game = (function () {
 		let direction = 'right';									// The direction in which the mamba will advance
 		let nextDirection = direction;
 		let wallThreshold;
+		let bodySVG = new Image();
+		bodySVG.src = "images/body.svg";
 		function setWallThreshold () {
 			wallThreshold = random(18, 36);
 		}
@@ -205,7 +205,7 @@ const mamba_game = (function () {
 			if (positionArray.length >= wallThreshold) {
 				newWallArray = positionArray.splice(6);
 				newWallArray.forEach(function (item) {
-					item.push(random(10, 100));
+					item.push(random(10, 120));
 				})
 				wall.addWall(newWallArray);
 				wallThreshold++;
@@ -215,17 +215,11 @@ const mamba_game = (function () {
 			isEating();
 		}
 
-		function drawSection (ctx, position) {
-			let x = blockSize * position[0];
-			let y = blockSize * position[1];
-			ctx.fillRect(x, y, blockSize, blockSize);
-		}
-
 		function draw (ctx) {										// Draw the mamba
 			ctx.save();
 			ctx.fillStyle = 'yellow';
 			positionArray.forEach(function (pos) {
-				drawSection(ctx, pos);
+				ctx.drawImage(bodySVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 			});
 			ctx.restore();
 		} 
@@ -272,7 +266,9 @@ const mamba_game = (function () {
 
 		let amount = 5;
 		let foodPositions = [];
-		let removeCounter = 25;
+		let removeCounter = 30;
+		const foodSVG = new Image();
+		foodSVG.src = "images/food.svg";
 
 		for (i = 0; i < amount; i++) {
 			let coordinate = getRandomPosition();
@@ -293,9 +289,8 @@ const mamba_game = (function () {
 
 		function draw(ctx) {
 			ctx.save();
-			ctx.fillStyle = 'cyan';
 			foodPositions.forEach(function (pos) {
-				ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
+				ctx.drawImage(foodSVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 			});
 			ctx.restore();
 		}
@@ -327,10 +322,12 @@ const mamba_game = (function () {
 			let randomPosition = getRandomPosition();
 			let mambaPositions = mamba.positionArray;
 			let wallPositions = wall.getWallPositions();
+			let turboFoodPositions = turboFood.getPositions();
 			if (
 				!checkCoordinateInArray(randomPosition, mambaPositions) && 
 				!checkCoordinateInArray(randomPosition, wallPositions) &&
-				!checkCoordinateInArray(randomPosition, foodPositions)
+				!checkCoordinateInArray(randomPosition, foodPositions) &&
+				!checkCoordinateInArray(randomPosition, turboFoodPositions)
 				) {
 				foodPositions.push(randomPosition);
 			} else {
@@ -373,7 +370,6 @@ const mamba_game = (function () {
 					lifeSpan -= value;
 					item.pop();
 					item.push(lifeSpan);
-					console.log(lifeSpan);
 				});
 			});
 		}
@@ -426,6 +422,8 @@ const mamba_game = (function () {
 	const turboFood = (function () {
 
 		let turboFoodPositions = [];
+		const turboFoodSVG = new Image();
+		turboFoodSVG.src = "images/turboFood.svg";
 
 		function addTurboFood (coordinate) {
 			turboFoodPositions.push(coordinate);
@@ -433,9 +431,8 @@ const mamba_game = (function () {
 
 		function draw(ctx) {
 			ctx.save();
-			ctx.fillStyle = 'lime';
 			turboFoodPositions.forEach(function (pos) {
-				ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
+				ctx.drawImage(turboFoodSVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
 			});
 			ctx.restore();
 		}
