@@ -7,7 +7,8 @@ const mamba_game = (function () {
 	const blockSize = 32;
 	const widthInBlocks = canvasWidth / blockSize;
 	const heightInBlocks = canvasHeight / blockSize;
-	[canvas.width, canvas.height] = [canvasWidth, canvasHeight];
+	canvas.width = canvasWidth;
+	canvas.height = canvasHeight;
 
 	let pause = false;
 	let drawOps = 0;
