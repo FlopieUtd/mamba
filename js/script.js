@@ -94,9 +94,15 @@ const mamba_game = (function () {
 		document.addEventListener('keydown', function (e) {
 			let key = e.which;
 			let direction = directionKeys[key];
+			console.log(direction);
 			if (direction) {
 				mamba.setDirection(direction);
 				e.preventDefault();
+				console.log('mamba: ' + direction)
+				setTimeout(function () {
+					mamba.setDirection(direction);
+					e.preventDefault();
+				}, 50)
 			}
 			if (key == 80) {
 				if (pause == false) {
@@ -205,7 +211,7 @@ const mamba_game = (function () {
 			if (positionArray.length >= wallThreshold) {
 				newWallArray = positionArray.splice(6);
 				newWallArray.forEach(function (item) {
-					item.push(random(10, 120));
+					item.push(random(10, 150));
 				})
 				wall.addWall(newWallArray);
 				wallThreshold++;
