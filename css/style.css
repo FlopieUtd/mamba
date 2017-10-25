@@ -4,6 +4,11 @@
 	box-sizing: border-box;
 }
 
+@font-face {
+    font-family: "perfect dos vga";
+    src: url("perfect-dos-vga.woff") format('woff');
+}
+
 body {
 	width: 100vw;
 	height: 100vh;
@@ -11,9 +16,8 @@ body {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	font-family: monospace;
+	font-family: 'perfect dos vga';
 	background: black;
-	font-family: Courier;
 	font-weight: 700;
 }
 
@@ -40,6 +44,37 @@ body {
 	justify-content: flex-end
 }
 
+.foodWhite, .turboFoodWhite {
+	height: 32px;
+	width: 32px;
+} 
+
+.equals {
+	padding: 0 1rem;
+}
+
+#foodPoints, #turboFoodPoints {
+	background: red;
+	color: yellow;
+	margin-right: 1rem;
+	text-align: right;
+}
+
+#foodPoints {
+	width: 2rem;
+}
+
+#turboFoodPoints {
+	width: 3rem;
+}
+
+.divider {
+	width: 3px;
+	height: 32px;
+	background: white;
+	margin: 0 2rem 0 1rem;
+}
+
 #score {
 	background: red;
 	color: yellow;
@@ -52,5 +87,4 @@ body {
 	background: black;
 	max-width: 100%;	
 	border: 32px solid blue;
-	border-top: 0;
 }

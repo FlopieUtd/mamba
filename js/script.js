@@ -10,6 +10,10 @@ const mamba_game = (function () {
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 
+	const scoreElement = document.getElementById('score');
+	const foodPointsElement = document.getElementById('foodPoints');
+	const turboFoodPointsElement = document.getElementById('turboFoodPoints');
+
 	let pause = false;
 	let drawOps = 0;
 
@@ -45,7 +49,8 @@ const mamba_game = (function () {
 		score.displayScore();	
 		if (mamba.checkCollision()) {
 			mamba.retreat();
-			mamba.draw(ctx);
+			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+			draw();
 			gameOver();
 			return
 		}
@@ -117,12 +122,12 @@ const mamba_game = (function () {
 	const mamba = (function () {
 		let previousPositionArray;									// Array with the coordinates the mamba occupied in the previous frame
 		let positionArray = [];										// Array with the current coordinates the mamba occupies
-		positionArray.push([7, 2]);
-		positionArray.push([6, 2]);
-		positionArray.push([5, 2]);
-		positionArray.push([4, 2]);
-		positionArray.push([3, 2]);
-		positionArray.push([2, 2]);
+		positionArray.push([10, 10]);
+		positionArray.push([9, 10]);
+		positionArray.push([8, 10]);
+		positionArray.push([7, 10]);
+		positionArray.push([6, 10]);
+		positionArray.push([5, 10]);
 		let direction = 'right';									// The direction in which the mamba will advance
 		let nextDirection = direction;
 		let wallThreshold;
@@ -277,6 +282,8 @@ const mamba_game = (function () {
 			let coordinate = getRandomPosition();
 			if (!checkCoordinateInArray(coordinate, mamba.positionArray)) {
 				foodPositions.push(coordinate);
+			} else {
+				i--
 			}
 		}
 
@@ -300,8 +307,8 @@ const mamba_game = (function () {
 		}
 
 		function getRandomPosition () {
-			let x = random(1, widthInBlocks - 2);
-			let y = random(1, heightInBlocks - 2);
+			let x = random(1, widthInBlocks - 1);
+			let y = random(1, heightInBlocks - 1);
 			return [x, y];
 		}
 
@@ -471,8 +478,9 @@ const mamba_game = (function () {
 		}
 
 		function displayScore () {
-			const scoreElement = document.getElementById('score');
 			scoreElement.innerHTML = score;
+			foodPointsElement.innerHTML = multiplier;
+			turboFoodPointsElement.innerHTML = 10 * multiplier;
 		}
 
 		function incrementMultiplier () {
