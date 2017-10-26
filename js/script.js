@@ -3,7 +3,7 @@ const mamba_game = (function () {
 	const ctx = canvas.getContext('2d');
 	const canvasWidth = 1248;
 	const canvasHeight = 704;
-	const frameLength = 100; 										// Sets speed of the game 
+	const frameLength = 100; 						
 	const blockSize = 32;
 	const widthInBlocks = canvasWidth / blockSize;
 	const heightInBlocks = canvasHeight / blockSize;
@@ -24,16 +24,22 @@ const mamba_game = (function () {
 	foodSVG.src = "images/food.svg";
 
 	const turboFoodSVG = new Image();
-	turboFoodSVG.src = "images/turboFood.svg";	
+	turboFoodSVG.src = "images/turbo-food.svg";	
 
 	const headSVG = new Image();
-	headSVG.src = "images/head.svg";	
+	headSVG.src = "images/head.svg";
+
+	const whiteBodySVG = new Image();
+	whiteBodySVG.src = "images/white-body.svg";
+
+	const whiteHeadSVG = new Image();
+	whiteHeadSVG.src = "images/white-head.svg";		
 
 	function init () {
-		bindEvents();												// Draw the mamba
+		bindEvents();						
 		mamba.setWallThreshold();
-		gameLoop();													// Start the game loop
-		logDrawOps();
+		gameLoop();				
+		/*logDrawOps();*/
 	}
 
 	function logDrawOps () {
@@ -43,21 +49,21 @@ const mamba_game = (function () {
 	}
 
 	function gameLoop () {
-		ctx.clearRect(0, 0, canvasWidth, canvasHeight);				// Clear the canvas
-		mamba.advance(food);										// Make the mamba advance one block in the chosen direction
-		draw();														// Draw the mamba
+		ctx.clearRect(0, 0, canvasWidth, canvasHeight);		
+		mamba.advance(food);										
+		draw();										
 		score.displayScore();	
 		if (mamba.checkCollision()) {
-			mamba.retreat();
+			let positionArray = mamba.retreat();
 			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 			draw();
-			gameOver();
+			gameOver(positionArray);
 			return
 		}
 		if (pause == true) {
 			return
 		}
-		setTimeout(gameLoop, frameLength);							// Repeat after frameLength milliseconds
+		setTimeout(gameLoop, frameLength);		
 	}
 
 	function equalCoordinates (coord1, coord2) {
@@ -80,14 +86,56 @@ const mamba_game = (function () {
 
 	function draw () {
 		wall.updateWallPositions();
-		mamba.draw(ctx);											// Draw the mamba
-		food.draw(ctx);												// Draw the food
-		turboFood.draw(ctx);										// Draw the turbo food
-		wall.draw(ctx);												// Draw the walls										
+		mamba.draw(ctx);							
+		food.draw(ctx);								
+		turboFood.draw(ctx);							
+		wall.draw(ctx);																				
 	}
 
-	function gameOver () {
-		console.log('Game over!')
+	function gameOver (positionArray) {
+		mamba.retreat();
+		let body = positionArray.slice(1, positionArray.length);
+		let head = positionArray[0];
+		let times = 3;
+
+		function drawBackground (ctx, color) {
+			ctx.save();
+				ctx.fillStyle = color;
+				positionArray.forEach(function (pos) {
+					ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
+					drawOps++;
+				});
+			ctx.restore();			
+		}
+
+		function drawGameOver () {
+			if (times > 0) {
+				drawBackground(ctx, 'blue');
+				drawBody(ctx);
+				drawHead(ctx);
+				setTimeout(function () {
+					drawBackground(ctx, 'black');
+					mamba.draw(ctx);
+					times--;
+					setTimeout(function () {
+						drawGameOver();
+					}, 250);
+				}, 250);			
+			}
+		}
+
+		function drawBody (ctx) {
+			body.forEach(function (pos) {
+				ctx.drawImage(whiteBodySVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
+				drawOps++;
+			});			
+		}
+
+		function drawHead (ctx) {
+			ctx.drawImage(whiteHeadSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);			
+		}
+
+		drawGameOver();
 	}
 
 	function bindEvents () {
@@ -120,22 +168,34 @@ const mamba_game = (function () {
 	}
 
 	const mamba = (function () {
-		let previousPositionArray;									// Array with the coordinates the mamba occupied in the previous frame
-		let positionArray = [];										// Array with the current coordinates the mamba occupies
+		let previousPositionArray;							
+		let positionArray = [];									
+		positionArray.push([15, 10]);
+		positionArray.push([14, 10]);
+		positionArray.push([13, 10]);
+		positionArray.push([12, 10]);
+		positionArray.push([11, 10]);
 		positionArray.push([10, 10]);
 		positionArray.push([9, 10]);
 		positionArray.push([8, 10]);
 		positionArray.push([7, 10]);
 		positionArray.push([6, 10]);
 		positionArray.push([5, 10]);
-		let direction = 'right';									// The direction in which the mamba will advance
+		let direction = 'right';									
 		let nextDirection = direction;
 		let wallThreshold;
+
 		function setWallThreshold () {
 			wallThreshold = random(18, 36);
 		}
 
-		function setDirection (newDirection) {						// Prevents the mamba from turning into itself
+		const startingAmount = random(5, 11);
+		const positionsToBeRemoved = positionArray.length - startingAmount;
+		for (var i = 0; i < positionsToBeRemoved; i++) {
+			positionArray.pop();
+		}
+
+		function setDirection (newDirection) {					
 			let allowedDirections;
 			switch (direction) {
 				case 'left':
@@ -154,7 +214,7 @@ const mamba_game = (function () {
 			}
 		}
 
-		function advance (food) {										// Makes the mamba occupy a new block in the chosen direction, removes the last block
+		function advance (food) {							
 			let nextPosition = positionArray[0].slice();
 			direction = nextDirection;
 			switch (direction) {
@@ -174,8 +234,8 @@ const mamba_game = (function () {
 					throw('Invalid direction');
 			}
 			previousPositionArray = positionArray.slice();
-			positionArray.unshift(nextPosition);					// Add the new mamba head
-			positionArray.pop();									// Remove the previous mamba tail
+			positionArray.unshift(nextPosition);				
+			positionArray.pop();						
 
 			function isEating () {
 				let foodPositions = food.getPositions();
@@ -222,7 +282,7 @@ const mamba_game = (function () {
 			isEating();
 		}
 
-		function draw (ctx) {										// Draw the mamba
+		function draw (ctx) {	
 			ctx.save();
 			let body = positionArray.slice(1, positionArray.length);
 			body.forEach(function (pos) {
@@ -258,7 +318,8 @@ const mamba_game = (function () {
 		}
 
 		function retreat () {
-			positionArray = previousPositionArray					// Set the mamba back one frame
+			positionArray = previousPositionArray;	
+			return previousPositionArray;
 		}
 
 		return {
@@ -307,8 +368,8 @@ const mamba_game = (function () {
 		}
 
 		function getRandomPosition () {
-			let x = random(1, widthInBlocks - 1);
-			let y = random(1, heightInBlocks - 1);
+			let x = random(0, widthInBlocks - 1);
+			let y = random(0, heightInBlocks - 1);
 			return [x, y];
 		}
 
@@ -362,7 +423,7 @@ const mamba_game = (function () {
 
 	const wall = (function () {
 
-		let walls = [];												// Contains arrays of three values: x-coordinate, y-coordinate and lifespan
+		let walls = [];			
 		let wallPositions = [];
 
 		function updateWallPositions () {
