@@ -583,7 +583,7 @@ const mamba_game = (function () {
 		}
 
 		function setLifeSpan () {
-			lifeSpan = random(2, 6) * 10; 
+			lifeSpan = random(2, 7) * 10; 
 		}
 
 		function startGoldDecay (time) {
