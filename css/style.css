@@ -16,7 +16,7 @@ body {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	font-family: 'perfect dos vga';
+	font-family: 'perfect dos vga', monospace;
 	background: black;
 	font-weight: 700;
 }
