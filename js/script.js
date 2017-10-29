@@ -20,22 +20,22 @@ const mamba_game = (function () {
 	let goldCallsLeft = 20;
 	let currentFrame = 0;
 
-	const bodySVG = new Image();
+	const bodySVG = new Image(32, 32);
 	bodySVG.src = "images/body.svg";
 
-	const foodSVG = new Image();
+	const foodSVG = new Image(32, 32);
 	foodSVG.src = "images/food.svg";
 
-	const turboFoodSVG = new Image();
+	const turboFoodSVG = new Image(32, 32);
 	turboFoodSVG.src = "images/turbo-food.svg";	
 
-	const headSVG = new Image();
+	const headSVG = new Image(32, 32);
 	headSVG.src = "images/head.svg";
 
-	const whiteBodySVG = new Image();
+	const whiteBodySVG = new Image(32, 32);
 	whiteBodySVG.src = "images/white-body.svg";
 
-	const whiteHeadSVG = new Image();
+	const whiteHeadSVG = new Image(32, 32);
 	whiteHeadSVG.src = "images/white-head.svg";		
 
 	function init () {
@@ -157,7 +157,11 @@ const mamba_game = (function () {
 				setTimeout(function () {
 					mamba.setDirection(direction);
 					e.preventDefault();
-				}, 50)
+				}, 25)
+				setTimeout(function () {
+					mamba.setDirection(direction);
+					e.preventDefault();
+				}, 75)
 			}
 			if (key == 80) {
 				if (pause == false) {
@@ -251,7 +255,7 @@ const mamba_game = (function () {
 						turboFood.removeTurboFood(positionArray[0]);
 						food.addFood();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.5);
+						wall.decrementLifeSpan(0.25);
 						wall.removeWall();
 					}
 				});
@@ -275,13 +279,15 @@ const mamba_game = (function () {
 			if (positionArray.length >= wallThreshold) {
 				newWallArray = positionArray.splice(6);
 				newWallArray.forEach(function (item) {
-					item.push(random(1, 200));
+					item.push(random(1, 250));
 				})
-				gold.addGold();
 				gold.setLifeSpan();
 				gold.startGoldDecay();
 				wall.addWall(newWallArray);
 				wallThreshold++;
+				setTimeout(function () {
+					gold.addGold();
+				});
 				score.incrementMultiplier();
 			}
 			isEating();
@@ -302,7 +308,7 @@ const mamba_game = (function () {
 			let borderCollision = false;
 			let mambaCollision = false;
 			let wallCollision = false;
-			let wallPositions = wall.getWallPositions();
+			let wallPositions = wall.getPositions();
 			let head = positionArray[0];
 			let rest = positionArray.slice(1);
 			let mambaX = head[0];
@@ -339,7 +345,7 @@ const mamba_game = (function () {
 
 	const food = (function(){
 
-		let amount = random(5, 10);
+		let amount = random(5, 12);
 		let foodPositions = [];
 		let removeCounter = 40;
 		let removeIn = random(20, 40);
@@ -400,7 +406,7 @@ const mamba_game = (function () {
 			foodCallsLeft--;
 			let randomPosition = getRandomPosition();
 			let mambaPositions = mamba.positionArray;
-			let wallPositions = wall.getWallPositions();
+			let wallPositions = wall.getPositions();
 			let turboFoodPositions = turboFood.getPositions();
 			if (
 				!checkCoordinateInArray(randomPosition, mambaPositions) && 
@@ -475,13 +481,13 @@ const mamba_game = (function () {
 			walls.push(array);
 		}
 
-		function getWallPositions () {
+		function getPositions () {
 			return wallPositions;
 		}
 
 		function draw(ctx) {
 			ctx.save();
-			ctx.fillStyle = '#e5776c';
+			ctx.fillStyle = '#dd7368';
 			walls.forEach(function (singleWall) {
 				singleWall.forEach(function (pos) {
 					ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
@@ -494,7 +500,7 @@ const mamba_game = (function () {
 			addWall: addWall,
 			updateWallPositions: updateWallPositions,
 			decrementLifeSpan: decrementLifeSpan,
-			getWallPositions: getWallPositions,
+			getPositions: getPositions,
 			removeWall: removeWall,
 			draw: draw,
 			walls: walls
@@ -547,9 +553,10 @@ const mamba_game = (function () {
 			goldCallsLeft--;
 			let randomPosition = getRandomPosition();
 			let mambaPositions = mamba.positionArray;
-			let wallPositions = wall.getWallPositions();
+			let wallPositions = wall.getPositions();
 			let foodPositions = food.getPositions();
 			let turboFoodPositions = turboFood.getPositions();
+			console.log(wallPositions);
 			if (
 				!checkCoordinateInArray(randomPosition, mambaPositions) && 
 				!checkCoordinateInArray(randomPosition, wallPositions) &&
@@ -583,7 +590,7 @@ const mamba_game = (function () {
 		}
 
 		function setLifeSpan () {
-			lifeSpan = random(2, 7) * 10; 
+			lifeSpan = random(3, 7) * 10; 
 		}
 
 		function startGoldDecay (time) {
