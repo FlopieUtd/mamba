@@ -16,9 +16,11 @@ const mamba_game = (function () {
 
 	let pause = false;
 	let isGameOver = false;
-	let foodCallsLeft = 5;
-	let goldCallsLeft = 20;
+	let foodCallsLeft = 4;
+	let goldCallsLeft = 8;
 	let currentFrame = 0;
+
+	// test
 
 	const bodySVG = new Image(32, 32);
 	bodySVG.src = "images/body.svg";
@@ -157,10 +159,6 @@ const mamba_game = (function () {
 				setTimeout(function () {
 					mamba.setDirection(direction);
 					e.preventDefault();
-				}, 25)
-				setTimeout(function () {
-					mamba.setDirection(direction);
-					e.preventDefault();
 				}, 75)
 			}
 			if (key == 80) {
@@ -255,7 +253,7 @@ const mamba_game = (function () {
 						turboFood.removeTurboFood(positionArray[0]);
 						food.addFood();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.25);
+						wall.decrementLifeSpan(0.20);
 						wall.removeWall();
 					}
 				});
@@ -370,7 +368,7 @@ const mamba_game = (function () {
 				foodAmount = foodPositions.length;
 				index = random(0, foodAmount);
 				foodPositions.splice(index, 1);
-				if (removeCounter > 10) {
+				if (removeCounter > 6) {
 					removeCounter--;
 				}
 				setRemoveIn(removeCounter);
