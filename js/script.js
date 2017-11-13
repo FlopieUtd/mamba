@@ -127,7 +127,8 @@ const mamba_game = (function () {
 		isGameOver = true;
 
 		function isHighscore () {
-			const lowestHighscore = highscores.slice(-1)[0];
+			const lowestHighscore = highscores.slice(-1)[0].score;
+			console.log(lowestHighscore);
 			if (highscores.length < 40 && endScore > 0 || endScore > lowestHighscore) {
 				return true;
 			} else {
