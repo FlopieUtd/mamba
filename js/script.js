@@ -1,49 +1,61 @@
 const mamba_game = (function () {
+
+	// Canvas
+
 	const canvas = document.querySelector('.canvas');
 	const ctx = canvas.getContext('2d');
-	const canvasWidth = 1248;
-	const canvasHeight = 704;
-	const frameLength = 100; 						
 	const blockSize = 32;
+	const canvasWidth = 1248;
+	const canvasHeight = 704;	
 	const widthInBlocks = canvasWidth / blockSize;
 	const heightInBlocks = canvasHeight / blockSize;
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 
+	// Canvas elements
+
+	const bodySVG = new Image(32, 32);
+	bodySVG.src = "images/body.svg";
+	const foodSVG = new Image(32, 32);
+	foodSVG.src = "images/food.svg";
+	const turboFoodSVG = new Image(32, 32);
+	turboFoodSVG.src = "images/turbo-food.svg";	
+	const headSVG = new Image(32, 32);
+	headSVG.src = "images/head.svg";
+	const whiteBodySVG = new Image(32, 32);
+	whiteBodySVG.src = "images/white-body.svg";
+	const whiteHeadSVG = new Image(32, 32);
+	whiteHeadSVG.src = "images/white-head.svg";	
+
+	// Menu elements					
+	
 	const scoreElement = document.getElementById('score');
 	const foodPointsElement = document.getElementById('foodPoints');
 	const turboFoodPointsElement = document.getElementById('turboFoodPoints');
 
+	// Game settings
+
+	const frameLength = 100; 	
+	let currentFrame = 0;
 	let pause = false;
 	let isGameOver = false;
 	let foodCallsLeft = 4;
-	let goldCallsLeft = 8;
-	let currentFrame = 0;
+	let goldCallsLeft = 12;
 
-	// test
+	// Highscores
 
-	const bodySVG = new Image(32, 32);
-	bodySVG.src = "images/body.svg";
+	let highscores = [];
+	let highscoreDatabase = firebase.database().ref().child('highscores');
+	highscoreDatabase.on('value', function (snap) {
+		highscores = snap.val();
+	});	
 
-	const foodSVG = new Image(32, 32);
-	foodSVG.src = "images/food.svg";
-
-	const turboFoodSVG = new Image(32, 32);
-	turboFoodSVG.src = "images/turbo-food.svg";	
-
-	const headSVG = new Image(32, 32);
-	headSVG.src = "images/head.svg";
-
-	const whiteBodySVG = new Image(32, 32);
-	whiteBodySVG.src = "images/white-body.svg";
-
-	const whiteHeadSVG = new Image(32, 32);
-	whiteHeadSVG.src = "images/white-head.svg";		
+	// Start game
 
 	function init () {
 		bindEvents();						
 		mamba.setWallThreshold();
-		gameLoop();				
+		gameLoop();			
 	}
 
 	function gameLoop () {
@@ -64,6 +76,8 @@ const mamba_game = (function () {
 		}
 		setTimeout(gameLoop, frameLength);		
 	}
+
+	// General functions
 
 	function equalCoordinates (coord1, coord2) {
 		return coord1[0] === coord2[0] && coord1[1] === coord2[1];
@@ -98,12 +112,90 @@ const mamba_game = (function () {
 		gold.draw(ctx);																			
 	}
 
+	function sort (array) {
+		sortedArray = array.sort(function (a, b) {
+			return a[1] - b[1];
+		})
+	}
+
 	function gameOver (positionArray) {
 		mamba.retreat();
 		let body = positionArray.slice(1, positionArray.length);
 		let head = positionArray[0];
 		let times = 3;
+		const endScore = score.getScore();
 		isGameOver = true;
+
+		function isHighscore () {
+			const lowestHighscore = highscores.slice(-1)[0];
+			if (highscores.length < 40 && endScore > 0 || endScore > lowestHighscore) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function addHighscore (userName, userScore) {
+			highscores.push({
+				name: userName,
+				score: userScore
+			})
+		}
+
+		function sort (array) {
+			sortedArray = array.sort(function (a, b) {
+				return b.score - a.score;
+			})
+			return sortedArray;
+		}
+
+		function writeHighscores (highscoreArray) {
+			highscoreArray.forEach(function (highscore, index) {
+				firebase.database().ref().child('highscores').child(index).set({
+				    name: highscore.name,
+				    score: highscore.score,
+				});
+			})
+		}
+
+		function showHighscores (highscoresArray) {
+			const highscoresContainer = document.querySelector('.highscores');
+			const highscoreElements = document.querySelectorAll('.highscore');	
+			highscoresContainer.style.display = "block";	
+			highscoresArray.forEach(function (highscore, index) {
+				const highscoreName = highscore.name;
+				const highscoreScore = highscore.score;
+				let element = highscoreElements[index];
+				const elementName = element.querySelector('.highscore-name');
+				const elementScore = element.querySelector('.highscore-score');
+				elementName.innerHTML = highscoreName;
+				elementScore.innerHTML = highscoreScore;
+			})
+
+			document.addEventListener('keydown', function (e) {
+				if (e.which == 13) {
+					location.reload();
+				}
+			})		
+		}
+
+		function showHighscoreSubmit (score) {
+			const highscoreSubmit = document.querySelector('.highscore-submit-wrapper');
+			const highscoreForm = document.querySelector('.highscore-submit');
+			const highscoreInput = document.querySelector('.highscore-input');
+			highscoreSubmit.style.display = "inline-block";
+			highscoreInput.focus();
+			highscoreForm.addEventListener('submit', handleSubmit);
+			function handleSubmit (e) {
+				e.preventDefault();
+				const name = document.querySelector('.highscore-input').value;
+				addHighscore(name, endScore);
+				highscores = sort(highscores);
+				writeHighscores(highscores);
+				showHighscores(highscores);
+				highscoreForm.removeEventListener('submit', handleSubmit);
+			}
+		}
 
 		function drawBackground (ctx, color) {
 			ctx.save();
@@ -141,6 +233,13 @@ const mamba_game = (function () {
 		}
 
 		drawGameOver();
+		if (isHighscore()) {
+			setTimeout(showHighscoreSubmit, 1500);
+		} else {
+			setTimeout(function () {
+				showHighscores(highscores);
+			}, 1500);
+		}
 	}
 
 	function bindEvents () {
@@ -253,7 +352,7 @@ const mamba_game = (function () {
 						turboFood.removeTurboFood(positionArray[0]);
 						food.addFood();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.20);
+						wall.decrementLifeSpan(0.10);
 						wall.removeWall();
 					}
 				});
@@ -286,7 +385,11 @@ const mamba_game = (function () {
 				setTimeout(function () {
 					gold.addGold();
 				});
-				score.incrementMultiplier();
+
+				let multiplier = score.getMultiplier();
+				if (multiplier < 10) {
+					score.incrementMultiplier();
+				}
 			}
 			isEating();
 		}
@@ -345,12 +448,11 @@ const mamba_game = (function () {
 
 		let amount = random(5, 12);
 		let foodPositions = [];
-		let removeCounter = 40;
-		let removeIn = random(20, 40);
+		let removeCounter = 60;
+		let removeIn = random(30, 60);
 
 		function setRemoveIn (removeCounter) {
 			removeIn = random(removeCounter / 2, removeCounter);
-			console.log(removeIn);
 		}
 
 		for (i = 0; i < amount; i++) {
@@ -406,19 +508,21 @@ const mamba_game = (function () {
 			let mambaPositions = mamba.positionArray;
 			let wallPositions = wall.getPositions();
 			let turboFoodPositions = turboFood.getPositions();
-			if (
-				!checkCoordinateInArray(randomPosition, mambaPositions) && 
-				!checkCoordinateInArray(randomPosition, wallPositions) &&
-				!checkCoordinateInArray(randomPosition, foodPositions) &&
-				!checkCoordinateInArray(randomPosition, turboFoodPositions)
-				) {
-				foodPositions.push(randomPosition);
-			} else {
-				if (foodCallsLeft > 0) {
-					addFood();
+			if (foodPositions.length < 30) {	// Never have more than 30 food blocks
+				if (
+					!checkCoordinateInArray(randomPosition, mambaPositions) && 
+					!checkCoordinateInArray(randomPosition, wallPositions) &&
+					!checkCoordinateInArray(randomPosition, foodPositions) &&
+					!checkCoordinateInArray(randomPosition, turboFoodPositions)
+					) {
+					foodPositions.push(randomPosition);
 				} else {
-					foodCallsLeft = 10;
-				}
+					if (foodCallsLeft > 0) {
+						addFood();
+					} else {
+						foodCallsLeft = 10;
+					}
+				}				
 			}
 		}
 
@@ -554,7 +658,6 @@ const mamba_game = (function () {
 			let wallPositions = wall.getPositions();
 			let foodPositions = food.getPositions();
 			let turboFoodPositions = turboFood.getPositions();
-			console.log(wallPositions);
 			if (
 				!checkCoordinateInArray(randomPosition, mambaPositions) && 
 				!checkCoordinateInArray(randomPosition, wallPositions) &&
@@ -594,8 +697,6 @@ const mamba_game = (function () {
 		function startGoldDecay (time) {
 			let startFrame = currentFrame;
 			endFrame = currentFrame + lifeSpan;
-			console.log(currentFrame);
-			console.log(endFrame); 
 		}
 
 		function checkDecay () {
@@ -629,6 +730,10 @@ const mamba_game = (function () {
 			score += (value * multiplier);
 		}
 
+		function getMultiplier () {
+			return multiplier;
+		}
+
 		function displayScore () {
 			scoreElement.innerHTML = score;
 			foodPointsElement.innerHTML = multiplier;
@@ -639,10 +744,16 @@ const mamba_game = (function () {
 			multiplier++;
 		}
 
+		function getScore () {
+			return score;
+		}
+
 		return  {
 			increaseScore: increaseScore,
 			displayScore: displayScore,
-			incrementMultiplier: incrementMultiplier
+			incrementMultiplier: incrementMultiplier,
+			getScore: getScore,
+			getMultiplier: getMultiplier
 		}
 	})();
 
