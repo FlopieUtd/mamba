@@ -48,6 +48,8 @@ const mamba_game = (function () {
 	let highscoreDatabase = firebase.database().ref().child('highscores');
 	highscoreDatabase.on('value', function (snap) {
 		highscores = snap.val();
+		if (highscores.length > 40) {highscores.pop();}
+		console.log(highscores);
 	});	
 
 	// Start game
@@ -127,6 +129,7 @@ const mamba_game = (function () {
 		isGameOver = true;
 
 		function isHighscore () {
+			console.log(highscores);
 			const lowestHighscore = highscores.slice(-1)[0].score;
 			console.log(lowestHighscore);
 			if (highscores.length < 40 && endScore > 0 || endScore > lowestHighscore) {
@@ -141,6 +144,18 @@ const mamba_game = (function () {
 				name: userName,
 				score: userScore
 			})
+			sort(highscores);
+			capHighscore(highscores);
+		}
+
+		function capHighscore (highscoreArray) {
+			if (highscoreArray.length > 40) {
+				console.log('capping');
+				highscoreArray.pop();
+				capHighscore(highscoreArray);
+			} else {
+				return 
+			}
 		}
 
 		function sort (array) {
@@ -162,15 +177,19 @@ const mamba_game = (function () {
 		function showHighscores (highscoresArray) {
 			const highscoresContainer = document.querySelector('.highscores');
 			const highscoreElements = document.querySelectorAll('.highscore');	
+			console.log(highscoreElements);
 			highscoresContainer.style.display = "block";	
 			highscoresArray.forEach(function (highscore, index) {
 				const highscoreName = highscore.name;
 				const highscoreScore = highscore.score;
 				let element = highscoreElements[index];
-				const elementName = element.querySelector('.highscore-name');
-				const elementScore = element.querySelector('.highscore-score');
-				elementName.innerHTML = highscoreName;
-				elementScore.innerHTML = highscoreScore;
+				if (element) {
+					const elementName = element.querySelector('.highscore-name');
+					const elementScore = element.querySelector('.highscore-score');
+					elementName.innerHTML = highscoreName;
+					elementScore.innerHTML = highscoreScore;
+				}
+			console.log(highscores);
 			})
 
 			document.addEventListener('keydown', function (e) {
@@ -189,12 +208,12 @@ const mamba_game = (function () {
 			highscoreForm.addEventListener('submit', handleSubmit);
 			function handleSubmit (e) {
 				e.preventDefault();
+				highscoreForm.removeEventListener('submit', handleSubmit);
 				const name = document.querySelector('.highscore-input').value;
 				addHighscore(name, endScore);
 				highscores = sort(highscores);
 				writeHighscores(highscores);
 				showHighscores(highscores);
-				highscoreForm.removeEventListener('submit', handleSubmit);
 			}
 		}
 
