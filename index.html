@@ -5,94 +5,24 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="icon" href="images/favicon.ico" type="image/x-icon"/>
+		<meta charset="UTF-8">
 	</head>
 	<body>
 
+		<div class="js-loading-screen loading-screen">
+			<h1>MAMBA</h1>
+		</div>
+
 		<div class="container">
-			<div class="highscore-submit-wrapper">
-				<form class="highscore-submit">
+			<div class="highscore-submit">
+				<form class="highscore-submit__form">
 					Naam:
-						<input type="text" class="highscore-input" maxlength="10">
+						<input type="text" class="highscore-submit__input" maxlength="10">
 				</form>
-			</div>
-			<div class="highscores">
-				<div class="header">
-					<div class="title">High Score</div>
-					<div class="highscore highest-score"><span><span>1. </span><span class="highscore-name"></span></span><span class="highscore-score"></span></div>
-				</div>
-				<div class="body">
-					<div class="column">
-						<div class="highscore"><span><span>2. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>3. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>4. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>5. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>6. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>7. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>8. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>9. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>10. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>11. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>12. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>13. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>14. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-					</div>
-					<div class="column">
-						<div class="highscore"><span><span>15. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>16. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>17. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>18. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>19. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>20. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>21. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>22. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>23. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>24. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>25. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>26. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>27. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-					</div>
-					<div class="column">
-						<div class="highscore"><span><span>28. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>29. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>30. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>31. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>32. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>33. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>34. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>35. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>36. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>37. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>38. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>39. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-						<div class="highscore"><span><span>40. </span><span class="highscore-name"></span></span><span class="highscore-score">0</span></div>
-					</div>										
-				</div>
-				<div class="footer">
-					&#60Enter&#62 = continue	
-				</div>
-			</div>
-			<div class="menu">
-				<div class="credits">
-					<span class="name">MAMBA</span>
-					<span>(c)1989, Bert Uffen - Amsterdam</span>
-				</div>
-				<div class="scoreboard">
-					<img src="images/food-white.svg" class="food-white">
-					<span class="equals">=</span>
-					<span id="foodPoints">1</span>
-					<span class="divider"></span>
-					<img src="images/turbo-food-white.svg" class="turbo-food-white">
-					<span class="equals">=</span>
-					<span id="turboFoodPoints">10</span>
-					<span>Score : </span>
-					<span id="score">0</span>
-				</div>
 			</div>
 			<canvas class="canvas"></canvas>
 		</div>
 		
-
-
 		<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
 		<script>

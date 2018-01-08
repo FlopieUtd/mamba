@@ -5,79 +5,63 @@ const mamba_game = (function () {
 	const canvas = document.querySelector('.canvas');
 	const ctx = canvas.getContext('2d');
 	const blockSize = 32;
-	const canvasWidth = 1248;
-	const canvasHeight = 704;	
-	const widthInBlocks = canvasWidth / blockSize;
-	const heightInBlocks = canvasHeight / blockSize;
+	const widthInBlocks = 39;
+	const heightInBlocks = 22;
+	const canvasWidth = widthInBlocks * blockSize;
+	const canvasHeight = heightInBlocks * blockSize;
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 
 	// Canvas elements
 
-	const bodySVG = new Image(32, 32);
+	const bodySVG = new Image(blockSize, blockSize);
 	bodySVG.src = "images/body.svg";
-	const foodSVG = new Image(32, 32);
-	foodSVG.src = "images/food.svg";
-	const turboFoodSVG = new Image(32, 32);
-	turboFoodSVG.src = "images/turbo-food.svg";	
-	const headSVG = new Image(32, 32);
+	const bronzeSVG = new Image(blockSize, blockSize);
+	bronzeSVG.src = "images/bronze.svg";
+	const silverSVG = new Image(blockSize, blockSize);
+	silverSVG.src = "images/silver.svg";	
+	const headSVG = new Image(blockSize, blockSize);
 	headSVG.src = "images/head.svg";
-	const whiteBodySVG = new Image(32, 32);
-	whiteBodySVG.src = "images/white-body.svg";
-	const whiteHeadSVG = new Image(32, 32);
-	whiteHeadSVG.src = "images/white-head.svg";	
+	const whiteBodySVG = new Image(blockSize, blockSize);
+	whiteBodySVG.src = "images/body-white.svg";
+	const whiteHeadSVG = new Image(blockSize, blockSize);
+	whiteHeadSVG.src = "images/head-white.svg";	
+
+	console.log(bodySVG);
 
 	// Menu elements					
 	
 	const scoreElement = document.getElementById('score');
-	const foodPointsElement = document.getElementById('foodPoints');
-	const turboFoodPointsElement = document.getElementById('turboFoodPoints');
+	const bronzePointsElement = document.getElementById('bronze-points');
+	const silverPointsElement = document.getElementById('silver-points');
 
 	// Game settings
 
-	const frameLength = 100; 	
+	const frameLength = 94; 	
 	let currentFrame = 0;
 	let pause = false;
 	let isGameOver = false;
-	let foodCallsLeft = 4;
-	let goldCallsLeft = 12;
+	let bronzeCallsLeft = 4;
+	let goldCallsLeft = 12;	
+
+	// Drawing variables
+
+	let allPreviousPositions = [];
 
 	// Highscores
 
-	let highscores = [];
-	let highscoreDatabase = firebase.database().ref().child('highscores');
-	highscoreDatabase.on('value', function (snap) {
-		highscores = snap.val();
-		if (highscores.length > 40) {highscores.pop();}
-		console.log(highscores);
+	let globalHighscores = [];
+	let localHighscores = [];
+	let globalHighscoreDatabase = firebase.database().ref().child('highscores');
+	globalHighscoreDatabase.on('value', function (snap) {
+		globalHighscores = snap.val();
+		if (globalHighscores.length > 40) {globalHighscores.pop();}
 	});	
 
-	// Start game
+	// Development 
 
-	function init () {
-		bindEvents();						
-		mamba.setWallThreshold();
-		gameLoop();			
-	}
-
-	function gameLoop () {
-		ctx.clearRect(0, 0, canvasWidth, canvasHeight);		
-		currentFrame++;
-		mamba.advance(food);										
-		draw();										
-		score.displayScore();	
-		if (mamba.checkCollision()) {
-			let positionArray = mamba.retreat();
-			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-			draw();
-			gameOver(positionArray);
-			return
-		}
-		if (pause == true) {
-			return
-		}
-		setTimeout(gameLoop, frameLength);		
-	}
+	let drawOps = 0;
+	
 
 	// General functions
 
@@ -105,162 +89,13 @@ const mamba_game = (function () {
 		return [x, y];
 	}
 
-	function draw () {
-		wall.updateWallPositions();
-		mamba.draw(ctx);							
-		food.draw(ctx);								
-		turboFood.draw(ctx);							
-		wall.draw(ctx);	
-		gold.draw(ctx);																			
-	}
-
 	function sort (array) {
 		sortedArray = array.sort(function (a, b) {
 			return a[1] - b[1];
 		})
-	}
+	}	
 
-	function gameOver (positionArray) {
-		mamba.retreat();
-		let body = positionArray.slice(1, positionArray.length);
-		let head = positionArray[0];
-		let times = 3;
-		const endScore = score.getScore();
-		isGameOver = true;
-
-		function isHighscore () {
-			console.log(highscores);
-			const lowestHighscore = highscores.slice(-1)[0].score;
-			console.log(lowestHighscore);
-			if (highscores.length < 40 && endScore > 0 || endScore > lowestHighscore) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		function addHighscore (userName, userScore) {
-			highscores.push({
-				name: userName,
-				score: userScore
-			})
-			sort(highscores);
-			capHighscore(highscores);
-		}
-
-		function capHighscore (highscoreArray) {
-			if (highscoreArray.length > 40) {
-				console.log('capping');
-				highscoreArray.pop();
-				capHighscore(highscoreArray);
-			} else {
-				return 
-			}
-		}
-
-		function sort (array) {
-			sortedArray = array.sort(function (a, b) {
-				return b.score - a.score;
-			})
-			return sortedArray;
-		}
-
-		function writeHighscores (highscoreArray) {
-			highscoreArray.forEach(function (highscore, index) {
-				firebase.database().ref().child('highscores').child(index).set({
-				    name: highscore.name,
-				    score: highscore.score,
-				});
-			})
-		}
-
-		function showHighscores (highscoresArray) {
-			const highscoresContainer = document.querySelector('.highscores');
-			const highscoreElements = document.querySelectorAll('.highscore');	
-			console.log(highscoreElements);
-			highscoresContainer.style.display = "block";	
-			highscoresArray.forEach(function (highscore, index) {
-				const highscoreName = highscore.name;
-				const highscoreScore = highscore.score;
-				let element = highscoreElements[index];
-				if (element) {
-					const elementName = element.querySelector('.highscore-name');
-					const elementScore = element.querySelector('.highscore-score');
-					elementName.innerHTML = highscoreName;
-					elementScore.innerHTML = highscoreScore;
-				}
-			console.log(highscores);
-			})
-
-			document.addEventListener('keydown', function (e) {
-				if (e.which == 13) {
-					location.reload();
-				}
-			})		
-		}
-
-		function showHighscoreSubmit (score) {
-			const highscoreSubmit = document.querySelector('.highscore-submit-wrapper');
-			const highscoreForm = document.querySelector('.highscore-submit');
-			const highscoreInput = document.querySelector('.highscore-input');
-			highscoreSubmit.style.display = "inline-block";
-			highscoreInput.focus();
-			highscoreForm.addEventListener('submit', handleSubmit);
-			function handleSubmit (e) {
-				e.preventDefault();
-				highscoreForm.removeEventListener('submit', handleSubmit);
-				const name = document.querySelector('.highscore-input').value;
-				addHighscore(name, endScore);
-				highscores = sort(highscores);
-				writeHighscores(highscores);
-				showHighscores(highscores);
-			}
-		}
-
-		function drawBackground (ctx, color) {
-			ctx.save();
-				ctx.fillStyle = color;
-				positionArray.forEach(function (pos) {
-					ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-				});
-			ctx.restore();			
-		}
-
-		function drawGameOver () {
-			if (times > 0) {
-				drawBackground(ctx, 'blue');
-				drawBody(ctx);
-				drawHead(ctx);
-				setTimeout(function () {
-					drawBackground(ctx, 'black');
-					mamba.draw(ctx);
-					times--;
-					setTimeout(function () {
-						drawGameOver();
-					}, 225);
-				}, 225);			
-			}
-		}
-
-		function drawBody (ctx) {
-			body.forEach(function (pos) {
-				ctx.drawImage(whiteBodySVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-			});			
-		}
-
-		function drawHead (ctx) {
-			ctx.drawImage(whiteHeadSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);			
-		}
-
-		drawGameOver();
-		if (isHighscore()) {
-			setTimeout(showHighscoreSubmit, 1500);
-		} else {
-			setTimeout(function () {
-				showHighscores(highscores);
-			}, 1500);
-		}
-	}
+	// Bind game controls
 
 	function bindEvents () {
 		const directionKeys = {
@@ -278,7 +113,7 @@ const mamba_game = (function () {
 				setTimeout(function () {
 					mamba.setDirection(direction);
 					e.preventDefault();
-				}, 75)
+				}, 80)
 			}
 			if (key == 80) {
 				if (pause == false) {
@@ -291,14 +126,44 @@ const mamba_game = (function () {
 		});
 	}
 
+	// Start game
+
+	function init () {
+		const screen = document.querySelector('.js-loading-screen');
+		fadeOut(screen);
+		bindEvents();
+		mamba.setWallThreshold();						
+		gameLoop();	
+		setInterval(function () {
+			console.log('drawOps', drawOps);
+			drawOps = 0;
+		}, 1000)
+	}
+
+	function gameLoop () {
+		currentFrame++;
+		mamba.advance(bronze);
+		wall.updateWallPositions();
+		draw(ctx, mamba.positions, bronze.positions, silver.positions, gold.getPosition(), wall.getPositions());		
+		if (mamba.checkCollision()) {
+			let positions = mamba.retreat();
+			gameOver(positions, mamba.positions[0]);
+			return
+		}								
+		if (pause == true) {
+			return
+		}		
+		setTimeout(gameLoop, frameLength);					
+	}
+
 	const mamba = (function () {
-		let previousPositionArray;							
-		let positionArray = [];									
-		positionArray.push([12, 10]);
-		positionArray.push([11, 10]);
-		positionArray.push([10, 10]);
-		positionArray.push([9, 10]);
-		positionArray.push([8, 10]);
+		let previousPositions;							
+		let positions = [];									
+		positions.push([12, 10, 'mamba']);
+		positions.push([11, 10, 'mamba']);
+		positions.push([10, 10, 'mamba']);
+		positions.push([9, 10, 'mamba']);
+		positions.push([8, 10, 'mamba']);
 		let direction = 'right';									
 		let nextDirection = direction;
 		let wallThreshold;
@@ -326,8 +191,8 @@ const mamba_game = (function () {
 			}
 		}
 
-		function advance (food) {							
-			let nextPosition = positionArray[0].slice();
+		function advance (bronze) {							
+			let nextPosition = positions[0].slice();
 			direction = nextDirection;
 			switch (direction) {
 				case 'left':
@@ -345,62 +210,63 @@ const mamba_game = (function () {
 				default:
 					throw('Invalid direction');
 			}
-			previousPositionArray = positionArray.slice();
-			positionArray.unshift(nextPosition);				
-			positionArray.pop();						
+			previousPositions = positions.slice();
+			positions.unshift(nextPosition);				
+			positions.pop();
 
 			function isEating () {
-				let foodPositions = food.getPositions();
-				let turboFoodPositions = turboFood.getPositions();
+				let bronzePositions = bronze.positions;
+				let silverPositions = silver.positions;
 				let goldPosition = gold.getPosition();
 
-				foodPositions.forEach(function(position) {
-					if (equalCoordinates(positionArray[0], position)) {
-						grow(positionArray);
-						food.removeFood(positionArray[0]);
-						food.addFood();
+				bronzePositions.forEach(function(position) {
+					if (equalCoordinates(positions[0], position)) {
+						grow(positions);
+						bronze.removeBronze(positions[0]);
+						bronze.addBronze();
 						score.increaseScore(1);
 						wall.decrementLifeSpan(1);
 						wall.removeWall();
-						food.decrementRemoveCounter();
+						bronze.decrementRemoveCounter();
 					}
 				});
 
-				turboFoodPositions.forEach(function(position) {
-					if (equalCoordinates(positionArray[0], position)) {
-						grow(positionArray);
-						turboFood.removeTurboFood(positionArray[0]);
-						food.addFood();
+				silverPositions.forEach(function (position) {
+					if (equalCoordinates(positions[0], position)) {
+						grow(positions);
+						silver.removeSilver(positions[0]);
+						bronze.addBronze();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.10);
+						wall.decrementLifeSpan(0.1);
 						wall.removeWall();
 					}
 				});
 
 				if (goldPosition) {
 					gold.checkDecay();
-					if (equalCoordinates(positionArray[0], goldPosition)) {
-						grow(positionArray);
+					if (equalCoordinates(positions[0], goldPosition)) {
+						grow(positions);
 						gold.removeGold();
 						const goldWorth = random(1, 10) * 10;
 						score.increaseScore(goldWorth);
 					}					
 				}
-			}
+			}						
 
 			function grow (array) {
 				let tail = array.slice(-1).pop();
 				array.push(tail);
 			}
 
-			if (positionArray.length >= wallThreshold) {
-				newWallArray = positionArray.splice(6);
-				newWallArray.forEach(function (item) {
-					item.push(random(1, 250));
+			if (positions.length >= wallThreshold) {
+				const newWallArray = [];
+				const tempArray = positions.splice(6);
+				tempArray.forEach(function (position) {
+					newWallArray.push([position[0], position[1], 'wall', random(1, 200)]);
 				})
+				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
 				gold.startGoldDecay();
-				wall.addWall(newWallArray);
 				wallThreshold++;
 				setTimeout(function () {
 					gold.addGold();
@@ -414,24 +280,13 @@ const mamba_game = (function () {
 			isEating();
 		}
 
-		function draw (ctx) {	
-			ctx.save();
-			let body = positionArray.slice(1, positionArray.length);
-			body.forEach(function (pos) {
-				ctx.drawImage(bodySVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-			});
-			let head = positionArray[0];
-			ctx.drawImage(headSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);
-			ctx.restore();
-		} 
-
 		function checkCollision () {
 			let borderCollision = false;
 			let mambaCollision = false;
 			let wallCollision = false;
 			let wallPositions = wall.getPositions();
-			let head = positionArray[0];
-			let rest = positionArray.slice(1);
+			let head = positions[0];
+			let rest = positions.slice(1);
 			let mambaX = head[0];
 			let mambaY = head[1];
 			const minX = 0;
@@ -449,27 +304,26 @@ const mamba_game = (function () {
 		}
 
 		function retreat () {
-			positionArray = previousPositionArray;	
-			return previousPositionArray;
+			positions = previousPositions;	
+			return previousPositions;
 		}
 
 		return {
-			draw: draw,
 			advance: advance,
 			setDirection: setDirection,
 			checkCollision: checkCollision,
 			retreat: retreat,
-			positionArray: positionArray,
+			positions: positions,
 			setWallThreshold: setWallThreshold
 		}
 	})();
 
-	const food = (function(){
+	const bronze = (function(){
 
 		let amount = random(5, 12);
-		let foodPositions = [];
+		let bronzePositions = [];
 		let removeCounter = 60;
-		let removeIn = random(30, 60);
+		let removeIn = random(40, 80);
 
 		function setRemoveIn (removeCounter) {
 			removeIn = random(removeCounter / 2, removeCounter);
@@ -477,8 +331,9 @@ const mamba_game = (function () {
 
 		for (i = 0; i < amount; i++) {
 			let coordinate = getRandomPosition();
-			if (!checkCoordinateInArray(coordinate, mamba.positionArray)) {
-				foodPositions.push(coordinate);
+			if (!checkCoordinateInArray(coordinate, mamba.positions)) {
+				coordinate.push('bronze');
+				bronzePositions.push(coordinate);
 			} else {
 				i--
 			}
@@ -487,22 +342,14 @@ const mamba_game = (function () {
 		function decrementRemoveCounter () {
 			removeIn--;
 			if (removeIn <= 0) {
-				foodAmount = foodPositions.length;
-				index = random(0, foodAmount);
-				foodPositions.splice(index, 1);
+				bronzeAmount = bronzePositions.length;
+				index = random(0, bronzeAmount);
+				bronzePositions.splice(index, 1);
 				if (removeCounter > 6) {
 					removeCounter--;
 				}
 				setRemoveIn(removeCounter);
 			}
-		}
-
-		function draw(ctx) {
-			ctx.save();
-			foodPositions.forEach(function (pos) {
-				ctx.drawImage(foodSVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-			});
-			ctx.restore();
 		}
 
 		function setNewPosition (mambaArray) {
@@ -514,154 +361,68 @@ const mamba_game = (function () {
 			}
 		}
 
-		function removeFood (coordinate) {
-			foodPositions.forEach(function (foodPosition, index) {
-				if ((foodPosition[0] == coordinate[0]) && (foodPosition[1] == coordinate[1])) {
-					foodPositions.splice(index, 1);
+		function removeBronze (coordinate) {
+			bronzePositions.forEach(function (bronzePosition, index) {
+				if ((bronzePosition[0] == coordinate[0]) && (bronzePosition[1] == coordinate[1])) {
+					bronzePositions.splice(index, 1);
 				}
 			})
 		}
 
-		function addFood () {
-			foodCallsLeft--;
+		function addBronze () {
+			bronzeCallsLeft--;
 			let randomPosition = getRandomPosition();
-			let mambaPositions = mamba.positionArray;
+			let mambaPositions = mamba.positions;
 			let wallPositions = wall.getPositions();
-			let turboFoodPositions = turboFood.getPositions();
-			if (foodPositions.length < 30) {	// Never have more than 30 food blocks
+			let silverPositions = silver.positions;
+			if (bronzePositions.length < 30) {	// Never have more than 30 bronze blocks
 				if (
 					!checkCoordinateInArray(randomPosition, mambaPositions) && 
 					!checkCoordinateInArray(randomPosition, wallPositions) &&
-					!checkCoordinateInArray(randomPosition, foodPositions) &&
-					!checkCoordinateInArray(randomPosition, turboFoodPositions)
+					!checkCoordinateInArray(randomPosition, bronzePositions) &&
+					!checkCoordinateInArray(randomPosition, silverPositions)
 					) {
-					foodPositions.push(randomPosition);
+					randomPosition.push('bronze');
+					bronzePositions.push(randomPosition);
 				} else {
-					if (foodCallsLeft > 0) {
-						addFood();
+					if (bronzeCallsLeft > 0) {
+						addBronze();
 					} else {
-						foodCallsLeft = 10;
+						bronzeCallsLeft = 10;
 					}
 				}				
 			}
 		}
 
-		function getPositions () {
-			return foodPositions;
-		}
-
 		return {
-			draw: draw,
 			setNewPosition: setNewPosition,
-			getPositions: getPositions,
-			removeFood: removeFood,
-			addFood: addFood,
+			positions: bronzePositions,
+			removeBronze: removeBronze,
+			addBronze: addBronze,
 			decrementRemoveCounter: decrementRemoveCounter
 		};
-	})();
+	})();	
 
-	const wall = (function () {
+	const silver = (function () {
 
-		let walls = [];			
-		let wallPositions = [];
+		let silverPositions = [];
 
-		function updateWallPositions () {
-			wallPositions = [];
-			walls.forEach(function (array) {
-				array.forEach(function (coord) {
-					wallPositions.push(coord);
-				})
-			})			
+		function addSilver (position) {
+			silverPositions.push(position);
 		}
 
-		function decrementLifeSpan (value) {
-			walls.forEach(function (array) {
-				array.forEach(function (item) {
-					lifeSpan = item[2];
-					lifeSpan -= value;
-					item.pop();
-					item.push(lifeSpan);
-				});
-			});
-		}
-
-		function removeWall () {
-			walls.forEach(function (array) {
-				array.forEach(function (item, index) {
-					lifeSpan = item[2];
-					if (lifeSpan <= 0) {
-						const turboFoodCoordinate = [];
-						turboFoodCoordinate.push(item[0], item[1]);
-						array.splice(index, 1);
-						turboFood.addTurboFood(turboFoodCoordinate);
-					}
-				})
-			});
-		}
-
-		function addWall (array) {
-			walls.push(array);
-		}
-
-		function getPositions () {
-			return wallPositions;
-		}
-
-		function draw(ctx) {
-			ctx.save();
-			ctx.fillStyle = '#dd7368';
-			walls.forEach(function (singleWall) {
-				singleWall.forEach(function (pos) {
-					ctx.fillRect(pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-				});
-			});
-			ctx.restore();
-		}
-
-		return {
-			addWall: addWall,
-			updateWallPositions: updateWallPositions,
-			decrementLifeSpan: decrementLifeSpan,
-			getPositions: getPositions,
-			removeWall: removeWall,
-			draw: draw,
-			walls: walls
-		}
-	})();
-
-	const turboFood = (function () {
-
-		let turboFoodPositions = [];
-
-		function addTurboFood (coordinate) {
-			turboFoodPositions.push(coordinate);
-		}
-
-		function draw(ctx) {
-			ctx.save();
-			turboFoodPositions.forEach(function (pos) {
-				ctx.drawImage(turboFoodSVG, pos[0] * blockSize, pos[1] * blockSize, blockSize, blockSize);
-			});
-			ctx.restore();
-		}
-
-		function removeTurboFood (coordinate) {
-			turboFoodPositions.forEach(function (foodPosition, index) {
-				if ((foodPosition[0] == coordinate[0]) && (foodPosition[1] == coordinate[1])) {
-					turboFoodPositions.splice(index, 1);
+		function removeSilver (coordinate) {
+			silverPositions.forEach(function (position, index) {
+				if ((position[0] == coordinate[0]) && (position[1] == coordinate[1])) {
+					silverPositions.splice(index, 1);
 				}
 			})
 		}
 
-		function getPositions () {
-			return turboFoodPositions;
-		}
-
 		return {
-			addTurboFood: addTurboFood,
-			getPositions: getPositions,
-			removeTurboFood: removeTurboFood,
-			draw: draw
+			addSilver: addSilver,
+			positions: silverPositions,
+			removeSilver: removeSilver,
 		}
 	})();
 
@@ -674,20 +435,20 @@ const mamba_game = (function () {
 		function addGold () {
 			goldCallsLeft--;
 			let randomPosition = getRandomPosition();
-			let mambaPositions = mamba.positionArray;
+			randomPosition.push('gold');
+			let mambaPositions = mamba.positions;
 			let wallPositions = wall.getPositions();
-			let foodPositions = food.getPositions();
-			let turboFoodPositions = turboFood.getPositions();
+			let bronzePositions = bronze.positions;
+			let silverPositions = silver.positions;
 			if (
 				!checkCoordinateInArray(randomPosition, mambaPositions) && 
 				!checkCoordinateInArray(randomPosition, wallPositions) &&
-				!checkCoordinateInArray(randomPosition, foodPositions) &&
-				!checkCoordinateInArray(randomPosition, turboFoodPositions) &&
-				!checkCoordinateInArray(randomPosition, foodPositions)
+				!checkCoordinateInArray(randomPosition, bronzePositions) &&
+				!checkCoordinateInArray(randomPosition, silverPositions)
 				) {
 				goldPosition = randomPosition;
-				draw(ctx, goldPosition);
-				goldLifeSpan = random(3, 8) * 10;
+				
+				LifeSpan = random(3, 8) * 10;
 			} else {
 				if (goldCallsLeft > 0) {
 					addGold();
@@ -695,19 +456,6 @@ const mamba_game = (function () {
 					goldCallsLeft = 20;
 				}
 			}
-		}
-
-		function draw (ctx) {
-			if (goldPosition) {
-				ctx.save();
-				ctx.fillStyle = 'lime';
-				ctx.fillRect(goldPosition[0] * blockSize, goldPosition[1] * blockSize, blockSize, blockSize);
-				ctx.restore();
-			}
-		}
-
-		function getPosition () {
-			return goldPosition;
 		}
 
 		function setLifeSpan () {
@@ -729,15 +477,75 @@ const mamba_game = (function () {
 			goldPosition = undefined;
 		}
 
+		function getPosition () {
+			return goldPosition;
+		}
+
 		return {
 			getPosition: getPosition,
 			addGold: addGold,
-			draw: draw,
 			removeGold: removeGold,
 			startGoldDecay: startGoldDecay,
 			setLifeSpan: setLifeSpan,
 			checkDecay: checkDecay,
 			endFrame: endFrame
+		}
+	})();
+
+	const wall = (function () {
+
+		let walls = [];			
+		let wallPositions = [];
+
+		function updateWallPositions () {
+			wallPositions = [];
+			walls.forEach(function (singleWall) {
+				singleWall.forEach(function (position) {
+					wallPositions.push(position);
+				})
+			})			
+		}
+
+		function decrementLifeSpan (value) {
+			walls.forEach(function (array) {
+				array.forEach(function (item) {
+					lifeSpan = item[3];
+					lifeSpan -= value;
+					item.pop();
+					item.push(lifeSpan);
+				});
+			});
+		}
+
+		function removeWall () {
+			walls.forEach(function (array) {
+				array.forEach(function (item, index) {
+					lifeSpan = item[3];
+					if (lifeSpan <= 0) {
+						const silverCoordinate = [];
+						silverCoordinate.push(item[0], item[1], 'silver');
+						array.splice(index, 1);
+						silver.addSilver(silverCoordinate);
+					}
+				})
+			});
+		}
+
+		function addWall (array) {
+			walls.push(array);
+		}
+
+		function getPositions () {
+			return wallPositions;
+		}
+
+		return {
+			addWall: addWall,
+			updateWallPositions: updateWallPositions,
+			decrementLifeSpan: decrementLifeSpan,
+			getPositions: getPositions,
+			removeWall: removeWall,
+			walls: walls
 		}
 	})();
 
@@ -756,8 +564,8 @@ const mamba_game = (function () {
 
 		function displayScore () {
 			scoreElement.innerHTML = score;
-			foodPointsElement.innerHTML = multiplier;
-			turboFoodPointsElement.innerHTML = 10 * multiplier;
+			bronzePointsElement.innerHTML = multiplier;
+			silverPointsElement.innerHTML = 10 * multiplier;
 		}
 
 		function incrementMultiplier () {
@@ -777,10 +585,260 @@ const mamba_game = (function () {
 		}
 	})();
 
+	function draw (ctx, mambaPositions, bronzePositions, silverPositions, goldPosition, wallPositions) {
+		
+		const allCurrentPositions = [];
+		const positionsToClear = [];
+		const positionsToDraw = [];
+
+		// Determine the current positions
+
+		mambaPositions.forEach(function (position) {
+			allCurrentPositions.push(position);
+		});
+
+		bronzePositions.forEach(function (position) {
+			allCurrentPositions.push(position);
+		});
+
+		silverPositions.forEach(function (position) {
+			allCurrentPositions.push(position);
+		});
+
+		if (goldPosition) {
+			allCurrentPositions.push(goldPosition);
+		}
+
+		wallPositions.forEach(function (position) {
+			allCurrentPositions.push(position);
+		})
+
+		allPreviousPositions.forEach(function (position) {
+			if (allCurrentPositions.indexOf(position) == -1) {
+				positionsToClear.push(position);
+			}
+		})
+
+		// Determine the positions to be drawn
+
+		allCurrentPositions.forEach(function (position) {
+			if (allPreviousPositions.indexOf(position) == -1) {
+				positionsToDraw.push(position);
+			}
+		})
+
+		// Clear and draw the second mamba position: the start of the body
+
+		positionsToDraw.push(allCurrentPositions[1]);
+		positionsToClear.push(allCurrentPositions[1]);
+
+		positionsToClear.forEach(function (position) {
+			drawOps++;
+			ctx.clearRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);				
+		});
+
+		ctx.save();
+
+		let isHead = true;
+
+		positionsToDraw.forEach(function (position) {
+			switch(position[2]) {
+				case 'mamba':
+					{
+						drawOps++;
+						if (isHead) {
+							ctx.drawImage(headSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+							isHead = false;
+						} else {
+							ctx.drawImage(bodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+						}
+					}
+					break;
+				case 'bronze':
+					{
+						drawOps++;
+						ctx.drawImage(bronzeSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
+					break;
+				case 'silver':
+					{
+						drawOps++;
+						ctx.drawImage(silverSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
+					break;
+				case 'gold':
+					{
+						drawOps++;
+						ctx.fillStyle = 'lime';
+						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
+					break;
+				case 'wall':
+					{
+						drawOps++;
+						ctx.fillStyle = '#dd7368';
+						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
+					break;
+				default:
+					{
+						console.error('Woopsie daisy!');
+					}
+			}
+		});
+
+		ctx.restore();
+
+		allPreviousPositions = allCurrentPositions.slice();
+	}
+
+	function gameOver (positions, collisionPosition) {
+		let body = positions.slice(1, positions.length);
+		let head = positions[0];
+		let times = 3;
+		const endScore = score.getScore();
+		const storage = window.localStorage;
+
+		isGameOver = true;
+
+		console.log(endScore);
+
+		function isHighscore (endScore) {
+			if (endScore > 0) {
+				return true;
+			}
+		}
+
+		function getLocalHighscores () {
+			let highscoreAmount = 40;
+			for (i = 0; i < highscoreAmount; i++) {
+				let highscore = storage.getItem(i);
+				if (highscore != null) {
+					console.log(highscore);
+					localHighscores.push(highscore);
+				} else {
+					console.log('no more local highscores');
+					return;
+				}
+			}
+		}
+
+		function showHighscoreSubmit (endScore) {
+
+			const highscoreSubmit = document.querySelector('.highscore-submit');
+			const highscoreForm = document.querySelector('.highscore-submit__form');
+			const highscoreInput = document.querySelector('.highscore-submit__input');
+
+			function handleSubmit (e) {
+				e.preventDefault();
+				highscoreForm.removeEventListener('submit', handleSubmit);
+				const name = highscoreInput.value;
+				addLocalHighscore(name, endScore);
+			}
+
+			highscoreSubmit.style.display = "inline-block";
+			highscoreInput.focus();
+			highscoreForm.addEventListener('submit', handleSubmit);
+		}
+
+		function addLocalHighscore (name, score) {
+			storage.setItem(0, name + "-" + score);
+		}
+
+		// Draw game over animation
+
+		function drawBackground (ctx, color) {
+			ctx.save();
+				ctx.fillStyle = color;
+				positions.forEach(function (position) {
+					drawOps++;
+					ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+				});
+			ctx.restore();			
+		}
+
+		function drawGameOver (collisionPosition) {
+
+			// Draw a wall block in case the collision was with a wall. Otherwise, mambaBody is drawn anyway.
+
+			if (times == 3) {
+				drawOps++;
+				ctx.fillStyle = '#dd7368';
+				ctx.fillRect(collisionPosition[0] * blockSize, collisionPosition[1] * blockSize, blockSize, blockSize);				
+			}
+
+			if (times > 0) {
+				drawBackground(ctx, 'blue');
+				drawBody(ctx, 'white');
+				drawHead(ctx, 'white');
+				setTimeout(function () {
+					drawBackground(ctx, 'black');
+					drawBody(ctx, 'yellow');
+					drawHead(ctx, 'yellow');
+					times--;
+					setTimeout(function () {
+						drawGameOver(collisionPosition);
+					}, 225);
+				}, 225);			
+			}
+		}
+
+		function drawBody (ctx, color) {
+			body.forEach(function (position) {
+				drawOps++;
+				if (color == 'white') {
+					drawOps++;
+					ctx.drawImage(whiteBodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+				} else {
+					drawOps++;
+					ctx.drawImage(bodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+				}
+			});			
+		}
+
+		function drawHead (ctx, color) {
+			drawOps++;
+			if (color == 'white') {
+				drawOps++;
+				ctx.drawImage(whiteHeadSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);			
+			} else {
+				drawOps++;
+				ctx.drawImage(headSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);	
+			}
+		}		
+
+		mamba.retreat();
+		drawGameOver(collisionPosition);
+		getLocalHighscores();
+		if (isHighscore(endScore)) {
+			showHighscoreSubmit(endScore);
+		}
+
+	}
+
 	return {
 		init: init
 	}
 
 })();
 
-mamba_game.init();
+
+setTimeout(function () {
+	mamba_game.init();
+},1000);
+
+function fadeOut(element) {
+  element.style.opacity = 1;
+
+  let last = +new Date();
+  const tick = function() {
+    element.style.opacity =+ element.style.opacity - (new Date() - last) / 500;
+    last = +new Date();
+
+    if (element.style.opacity > 0) {
+      (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+    }
+  };
+  tick();
+}
+
