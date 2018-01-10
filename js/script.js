@@ -27,8 +27,6 @@ const mamba_game = (function () {
 	const whiteHeadSVG = new Image(blockSize, blockSize);
 	whiteHeadSVG.src = "images/head-white.svg";	
 
-	console.log(bodySVG);
-
 	// Menu elements					
 	
 	const scoreElement = document.getElementById('score');
@@ -716,7 +714,7 @@ const mamba_game = (function () {
 		}
 
 		function processLocalHighscore (highscoreString, name, score) {
-			console.log(highscoreString);
+			console.log('highscore string: ', highscoreString);
 			if (highscoreString == null) {
 				processedHighscoreString = '1-' + name + '-' + score;
 			} else {
@@ -725,6 +723,7 @@ const mamba_game = (function () {
 		}
 
 		function setLocalHighcores () {
+			console.log('processedHighscoreString', processedHighscoreString);
 			storage.setItem('highscores', processedHighscoreString);
 		}
 
@@ -741,6 +740,7 @@ const mamba_game = (function () {
 				const name = highscoreInput.value;
 				getLocalHighscores();
 				processLocalHighscore(highscoreString, name, endScore);
+				setLocalHighcores(processedHighscoreString);
 			}
 
 			highscoreSubmit.style.display = "inline-block";
