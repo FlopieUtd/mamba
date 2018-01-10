@@ -715,8 +715,16 @@ const mamba_game = (function () {
 
 		function processLocalHighscore (highscoreString, name, score) {
 
-			processedHighscoreString = name + '-' + score + ';';
-
+			processedHighscoreString += name + '-' + score + ';';
+			const highscoreStrings = processedHighscoreString.split(';');
+			highscoreStrings.forEach(function (string) {
+				const stringItems = string.split('-');
+				const highscore = {name: stringItems[0], score: stringItems[1]};
+				localHighscores.push(highscore);
+			});
+			console.log('unsorted', localHighscores);
+			sort(localHighscores);
+			console.log('sorted', localHighscores);
 		}
 
 		function setLocalHighcores () {
