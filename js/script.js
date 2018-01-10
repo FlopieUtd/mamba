@@ -716,9 +716,9 @@ const mamba_game = (function () {
 		function processLocalHighscore (highscoreString, name, score) {
 			console.log('highscore string: ', highscoreString);
 			if (highscoreString == null) {
-				processedHighscoreString = '1-' + name + '-' + score;
+				processedHighscoreString = '1-' + name + '-' + score + ';';
 			} else {
-				console.log('highscore string', highscoreString);
+				processedHighscoreString = '1-' + name + '-' + score + ';';
 			}
 		}
 
