@@ -720,7 +720,7 @@ const mamba_game = (function () {
 				processedHighscoreString = name + '-' + score;
 			} else {
 				processedHighscoreString = highscoreString;
-				processedHighscoreString += ';' name + '-' + score;
+				processedHighscoreString += ';' + name + '-' + score;
 				const highscoreStrings = processedHighscoreString.split(';');
 				highscoreStrings.forEach(function (string) {
 					const stringItems = string.split('-');
