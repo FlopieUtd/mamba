@@ -714,12 +714,9 @@ const mamba_game = (function () {
 		}
 
 		function processLocalHighscore (highscoreString, name, score) {
-			console.log('highscore string: ', highscoreString);
-			if (highscoreString == null) {
-				processedHighscoreString = '1-' + name + '-' + score + ';';
-			} else {
-				processedHighscoreString = '1-' + name + '-' + score + ';';
-			}
+
+			processedHighscoreString = name + '-' + score + ';';
+
 		}
 
 		function setLocalHighcores () {
