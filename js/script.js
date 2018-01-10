@@ -37,7 +37,7 @@ const mamba_game = (function () {
 
 	// Game settings
 
-	const frameLength = 94; 	
+	const frameLength = 92; 	
 	let currentFrame = 0;
 	let pause = false;
 	let isGameOver = false;
@@ -698,6 +698,8 @@ const mamba_game = (function () {
 		let times = 3;
 		const endScore = score.getScore();
 		const storage = window.localStorage;
+		let highscoreString = '';
+		let processedHighscoreString = '';
 
 		isGameOver = true;
 
@@ -710,18 +712,22 @@ const mamba_game = (function () {
 		}
 
 		function getLocalHighscores () {
-			let highscoreAmount = 40;
-			for (i = 0; i < highscoreAmount; i++) {
-				let highscore = storage.getItem(i);
-				if (highscore != null) {
-					console.log(highscore);
-					localHighscores.push(highscore);
-				} else {
-					console.log('no more local highscores');
-					return;
-				}
+			highscoreString = storage.getItem('highscores');
+		}
+
+		function processLocalHighscore (highscoreString, name, score) {
+			console.log(highscoreString);
+			if (highscoreString == null) {
+				processedHighscoreString = '1-' + name + '-' + score;
+			} else {
+				console.log('highscore string', highscoreString);
 			}
 		}
+
+		function setLocalHighcores () {
+			storage.setItem('highscores', processedHighscoreString);
+		}
+
 
 		function showHighscoreSubmit (endScore) {
 
@@ -733,7 +739,8 @@ const mamba_game = (function () {
 				e.preventDefault();
 				highscoreForm.removeEventListener('submit', handleSubmit);
 				const name = highscoreInput.value;
-				addLocalHighscore(name, endScore);
+				getLocalHighscores();
+				processLocalHighscore(highscoreString, name, endScore);
 			}
 
 			highscoreSubmit.style.display = "inline-block";
@@ -741,9 +748,7 @@ const mamba_game = (function () {
 			highscoreForm.addEventListener('submit', handleSubmit);
 		}
 
-		function addLocalHighscore (name, score) {
-			storage.setItem(0, name + "-" + score);
-		}
+
 
 		// Draw game over animation
 
@@ -809,7 +814,7 @@ const mamba_game = (function () {
 
 		mamba.retreat();
 		drawGameOver(collisionPosition);
-		getLocalHighscores();
+
 		if (isHighscore(endScore)) {
 			showHighscoreSubmit(endScore);
 		}
@@ -841,4 +846,3 @@ function fadeOut(element) {
   };
   tick();
 }
-
