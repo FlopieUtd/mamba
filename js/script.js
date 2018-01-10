@@ -89,8 +89,9 @@ const mamba_game = (function () {
 
 	function sort (array) {
 		sortedArray = array.sort(function (a, b) {
-			return a[1] - b[1];
+			return a.score - b.score;
 		})
+		return sortedArray;
 	}	
 
 	// Bind game controls
@@ -714,6 +715,9 @@ const mamba_game = (function () {
 		}
 
 		function processLocalHighscore (highscoreString, name, score) {
+
+			processedHighscoreString = name + '-' + score + ';';
+			/*
 			processedHighscoreString = highscoreString;
 			processedHighscoreString += name + '-' + score + ';';
 			const highscoreStrings = processedHighscoreString.split(';');
@@ -725,6 +729,7 @@ const mamba_game = (function () {
 			console.log('unsorted', localHighscores);
 			sort(localHighscores);
 			console.log('sorted', localHighscores);
+			*/
 		}
 
 		function setLocalHighcores () {
