@@ -714,7 +714,7 @@ const mamba_game = (function () {
 		}
 
 		function processLocalHighscore (highscoreString, name, score) {
-
+			processedHighscoreString = highscoreString;
 			processedHighscoreString += name + '-' + score + ';';
 			const highscoreStrings = processedHighscoreString.split(';');
 			highscoreStrings.forEach(function (string) {
