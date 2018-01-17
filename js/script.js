@@ -48,8 +48,11 @@ const mamba_game = (function () {
 
 	// Highscores
 
+	const storage = window.localStorage;
 	let globalHighscores = [];
 	let localHighscores = [];
+	let highscoreString = '';	
+	let processedHighscoreString = '';
 	let globalHighscoreDatabase = firebase.database().ref().child('highscores');
 	globalHighscoreDatabase.on('value', function (snap) {
 		globalHighscores = snap.val();
@@ -60,7 +63,6 @@ const mamba_game = (function () {
 
 	let drawOps = 0;
 	
-
 	// General functions
 
 	function equalCoordinates (coord1, coord2) {
@@ -93,6 +95,24 @@ const mamba_game = (function () {
 		})
 		return sortedArray;
 	}	
+
+	function getLocalHighscores () {
+		highscoreString = storage.getItem('highscores');
+	}
+
+	function processLocalHighscore (highscoreString) {
+		if (highscoreString != '') {
+			const highscoreStrings = highscoreString.split(';');
+			highscoreStrings.forEach(function (string) {
+				const stringItems = string.split('-');
+				const highscore = {name: stringItems[0], score: Number(stringItems[1])};
+				localHighscores.push(highscore);
+			});
+			sort(localHighscores);
+		} else {
+			console.log('no highscore set');
+		}
+	}
 
 	// Bind game controls
 
@@ -131,19 +151,24 @@ const mamba_game = (function () {
 		const screen = document.querySelector('.js-loading-screen');
 		fadeOut(screen);
 		bindEvents();
-		mamba.setWallThreshold();						
+		mamba.setWallThreshold();
+		getLocalHighscores();
+		processLocalHighscore(highscoreString);						
 		gameLoop();	
-		setInterval(function () {
-			console.log('drawOps', drawOps);
-			drawOps = 0;
-		}, 1000)
+		if (!isGameOver) {
+			setInterval(function () {
+				console.log('drawOps', drawOps);
+				drawOps = 0;
+			}, 1000);			
+		}
 	}
 
 	function gameLoop () {
 		currentFrame++;
 		mamba.advance(bronze);
 		wall.updateWallPositions();
-		draw(ctx, mamba.positions, bronze.positions, silver.positions, gold.getPosition(), wall.getPositions());		
+		draw(ctx, mamba.positions, bronze.positions, silver.positions, gold.getPosition(), wall.getPositions());	
+		score.displayScore();		
 		if (mamba.checkCollision()) {
 			let positions = mamba.retreat();
 			gameOver(positions, mamba.positions[0]);
@@ -563,8 +588,8 @@ const mamba_game = (function () {
 
 		function displayScore () {
 			scoreElement.innerHTML = score;
-			bronzePointsElement.innerHTML = multiplier;
-			silverPointsElement.innerHTML = 10 * multiplier;
+			// bronzePointsElement.innerHTML = multiplier;
+			// silverPointsElement.innerHTML = 10 * multiplier;
 		}
 
 		function incrementMultiplier () {
@@ -696,48 +721,41 @@ const mamba_game = (function () {
 		let head = positions[0];
 		let times = 3;
 		const endScore = score.getScore();
-		const storage = window.localStorage;
-		let highscoreString = '';
-		let processedHighscoreString = '';
 
 		isGameOver = true;
 
-		console.log(endScore);
-
 		function isHighscore (endScore) {
-			if (endScore > 0) {
+			if (localHighscores.length < 40) {
 				return true;
+			} else if (endScore > localHighscores[localHighscores.length - 1].score) {
+				return true
+			} else {
+				return false;
 			}
 		}
 
-		function getLocalHighscores () {
-			highscoreString = storage.getItem('highscores');
+		function capArray (array) {
+			if (array.length > 39) {
+				array.pop();
+				capArray(array);
+			} else {
+				return 
+			}
 		}
 
-		function processLocalHighscore (highscoreString, name, score) {
-
-			if (highscoreString == null) {
-				processedHighscoreString = name + '-' + score;
+		function setLocalHighcores (processedHighscoreString, name, endScore) {
+			
+			if (highscoreString == '') {
+				processedHighscoreString = name + '-' + endScore;
 			} else {
 				processedHighscoreString = highscoreString;
-				processedHighscoreString += ';' + name + '-' + score;
-				const highscoreStrings = processedHighscoreString.split(';');
-				highscoreStrings.forEach(function (string) {
-					const stringItems = string.split('-');
-					const highscore = {name: stringItems[0], score: stringItems[1]};
-					localHighscores.push(highscore);
-				});
-				console.log('unsorted', localHighscores);
-				sort(localHighscores);
-				console.log('sorted', localHighscores);
+				processedHighscoreString += ';' + name + '-' + endScore;	
+				capArray(localHighscores);
 			}
-		}
-
-		function setLocalHighcores () {
-			console.log('processedHighscoreString', processedHighscoreString);
+			localHighscores.push({name: name, score: endScore});
+			sort(localHighscores);
 			storage.setItem('highscores', processedHighscoreString);
 		}
-
 
 		function showHighscoreSubmit (endScore) {
 
@@ -749,9 +767,9 @@ const mamba_game = (function () {
 				e.preventDefault();
 				highscoreForm.removeEventListener('submit', handleSubmit);
 				const name = highscoreInput.value;
-				getLocalHighscores();
-				processLocalHighscore(highscoreString, name, endScore);
-				setLocalHighcores(processedHighscoreString);
+				setLocalHighcores(processedHighscoreString, name, endScore);
+				renderHighscores('local');
+				showHighscores('local');
 			}
 
 			highscoreSubmit.style.display = "inline-block";
@@ -759,7 +777,38 @@ const mamba_game = (function () {
 			highscoreForm.addEventListener('submit', handleSubmit);
 		}
 
+		function renderHighscores (type) {
+			if (type == 'local') {
+				let place = 2;
+				const columns = document.querySelectorAll('.' + type + '-highscores .column');
+				for (i = 0; i < 3; i++) {
+					const column = columns[i];
+					for (j = 0; j < 13; j++) {
+						column.innerHTML += `<div class="highscore highscore-${place}"><span><span class="place">${place}.</span><span class="name"></span></span><span class="score"></span></div>`;
+						place++;
+					}
+				}
+			}
+			console.log(localHighscores);
 
+			const highscoreElements = document.querySelectorAll('.highscore');
+			localHighscores.forEach(function (highscore, index) {
+				const element = highscoreElements[index];
+				console.log(element);
+				const nameElement = element.querySelector('.name');
+				nameElement.innerHTML = highscore.name;
+				const scoreElement = element.querySelector('.score');
+				scoreElement.innerHTML = highscore.score;
+			})	
+
+
+		}
+
+		function showHighscores(type) {
+			document.querySelector('.highscores').style.display = 'block';
+			document.querySelector('.local-highscores').style.display = 'block';
+
+		}
 
 		// Draw game over animation
 
@@ -827,9 +876,12 @@ const mamba_game = (function () {
 		drawGameOver(collisionPosition);
 
 		if (isHighscore(endScore)) {
-			showHighscoreSubmit(endScore);
+			setTimeout(function () {
+				showHighscoreSubmit(endScore);
+			}, 1500);
+		} else {
+			console.log('show highscores');
 		}
-
 	}
 
 	return {

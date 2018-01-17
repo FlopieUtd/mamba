@@ -9,18 +9,55 @@
 	</head>
 	<body>
 
-		<div class="js-loading-screen loading-screen">
-			<h1>MAMBA</h1>
-		</div>
-
 		<div class="container">
+			<div class="header">
+				<span class="title yellow-text">MAMBA</span>
+				<span class="legend">
+					<span class="legend__score yellow-text" id="score">0</span>
+				</span>
+			</div>
 			<div class="highscore-submit">
 				<form class="highscore-submit__form">
 					Naam:
-						<input type="text" class="highscore-submit__input" maxlength="10">
+					<input type="text" class="highscore-submit__input" maxlength="10">
 				</form>
 			</div>
+			<div class="highscores">
+				<div class="local-highscores">
+					<div class="highscore-header">
+						<span class="highscore-label">Highscore</span>
+						<div class="topscore-holder">
+							<div class="highscore highscore-local topscore">
+								<span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
+							</div>
+						</div>
+					</div>
+					<div class="body">
+						<div class="column"></div>
+						<div class="column"></div>
+						<div class="column"></div>
+					</div>
+				</div>
+				<div class="global-highscores">
+					<div class="highscore-header">
+						<span class="highscore-label">Highscore</span>
+						<div class="topscore-holder">
+							<div class="highscore highscore-global topscore"></div>
+						</div>
+					</div>
+					<div class="body">
+						<div class="column"></div>
+						<div class="column"></div>
+						<div class="column"></div>						
+					</div>
+				</div>
+			</div>
 			<canvas class="canvas"></canvas>
+
+		</div>
+
+		<div class="js-loading-screen loading-screen">
+			<h1>MAMBA</h1>
 		</div>
 		
 		<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
