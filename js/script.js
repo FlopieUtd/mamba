@@ -734,10 +734,10 @@ const mamba_game = (function () {
 			}
 		}
 
-		function capArray (array) {
-			if (array.length > 39) {
+		function capArray (array, capAmount) {
+			if (array.length > capAmount) {
 				array.pop();
-				capArray(array);
+				capArray(array, capAmount);
 			} else {
 				return 
 			}
@@ -748,9 +748,11 @@ const mamba_game = (function () {
 			if (highscoreString == '') {
 				processedHighscoreString = name + '-' + endScore;
 			} else {
+				console.log('typeof', typeof highscoreString);
+				console.log('value', highscoreString);
 				processedHighscoreString = highscoreString;
 				processedHighscoreString += ';' + name + '-' + endScore;	
-				capArray(localHighscores);
+				capArray(localHighscores, 39);
 			}
 			localHighscores.push({name: name, score: endScore});
 			sort(localHighscores);
@@ -789,19 +791,18 @@ const mamba_game = (function () {
 					}
 				}
 			}
-			console.log(localHighscores);
 
+			console.log('1', localHighscores);
+			capArray(localHighscores, 40);
+			console.log('2', localHighscores);
 			const highscoreElements = document.querySelectorAll('.highscore');
 			localHighscores.forEach(function (highscore, index) {
 				const element = highscoreElements[index];
-				console.log(element);
 				const nameElement = element.querySelector('.name');
 				nameElement.innerHTML = highscore.name;
 				const scoreElement = element.querySelector('.score');
 				scoreElement.innerHTML = highscore.score;
 			})	
-
-
 		}
 
 		function showHighscores(type) {
@@ -875,13 +876,15 @@ const mamba_game = (function () {
 		mamba.retreat();
 		drawGameOver(collisionPosition);
 
-		if (isHighscore(endScore)) {
-			setTimeout(function () {
+		setTimeout(function () {
+			if (isHighscore(endScore)) {
 				showHighscoreSubmit(endScore);
-			}, 1500);
-		} else {
-			console.log('show highscores');
-		}
+			} else {
+				console.log('show highscores');
+				renderHighscores('local');
+				showHighscores('local');
+			}
+		}, 1500);
 	}
 
 	return {
