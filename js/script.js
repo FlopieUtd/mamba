@@ -101,9 +101,7 @@ const mamba_game = (function () {
 	}
 
 	function processLocalHighscore (highscoreString) {
-		if (highscoreString != '') {
-			console.log('typeof', typeof highscoreString);
-			console.log('value', highscoreString);
+		if (highscoreString != null {
 			const highscoreStrings = highscoreString.split(';');
 			highscoreStrings.forEach(function (string) {
 				const stringItems = string.split('-');
