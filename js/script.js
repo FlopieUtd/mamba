@@ -102,6 +102,8 @@ const mamba_game = (function () {
 
 	function processLocalHighscore (highscoreString) {
 		if (highscoreString != '') {
+			console.log('typeof', typeof highscoreString);
+			console.log('value', highscoreString);
 			const highscoreStrings = highscoreString.split(';');
 			highscoreStrings.forEach(function (string) {
 				const stringItems = string.split('-');
@@ -748,8 +750,6 @@ const mamba_game = (function () {
 			if (highscoreString == '') {
 				processedHighscoreString = name + '-' + endScore;
 			} else {
-				console.log('typeof', typeof highscoreString);
-				console.log('value', highscoreString);
 				processedHighscoreString = highscoreString;
 				processedHighscoreString += ';' + name + '-' + endScore;	
 				capArray(localHighscores, 39);
