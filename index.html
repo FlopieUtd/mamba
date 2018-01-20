@@ -8,13 +8,25 @@
 		<meta charset="UTF-8">
 	</head>
 	<body>
-
 		<div class="container">
 			<div class="header">
 				<span class="title yellow-text">MAMBA</span>
-				<span class="legend">
-					<span class="legend__score yellow-text" id="score">0</span>
-				</span>
+				<div class="legend">
+					<div class="legend__bronze-value">
+						<img class="bronze-img" src="images/bronze-white.svg">
+						<span class="equals white-text">=</span>
+						<span class="value bronze-value yellow-text">1</span>
+					</div>
+					<div class="legend__silver-value">
+						<img class="silver-img" src="images/silver-white.svg">
+						<span class="equals white-text">=</span>
+						<span class="value silver-value yellow-text">10</span>
+					</div>
+					<div class="legend__score-container">
+						<span class="legend__score-label white-text">Score :</span>
+						<span class="legend__score yellow-text" id="score">0</span>
+					</div>
+				</div>
 			</div>
 			<div class="highscore-submit">
 				<form class="highscore-submit__form">
@@ -25,10 +37,12 @@
 			<div class="highscores">
 				<div class="local-highscores">
 					<div class="highscore-header">
-						<span class="highscore-label">Highscore</span>
-						<div class="topscore-holder">
-							<div class="highscore highscore-local topscore">
-								<span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
+						<div class="topscore-container">
+							<span class="highscore-label">Local Highscores <span class="switch">&#9658;</span></span>
+							<div class="topscore-holder">
+								<div class="highscore highscore-local topscore">
+									<span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -51,15 +65,13 @@
 						<div class="column"></div>						
 					</div>
 				</div>
+				<div class="press-enter">&lt;Enter&gt; = continue</div>
 			</div>
 			<canvas class="canvas"></canvas>
-
 		</div>
-
 		<div class="js-loading-screen loading-screen">
 			<h1>MAMBA</h1>
 		</div>
-		
 		<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
 		<script>
@@ -75,6 +87,5 @@
 		  	firebase.initializeApp(config);
 		</script>
 		<script src="js/script.js"></script>
-
 	</body>
 </html>

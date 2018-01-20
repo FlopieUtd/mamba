@@ -11,6 +11,7 @@ const mamba_game = (function () {
 	const canvasHeight = heightInBlocks * blockSize;
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
+	const loadingScreen = document.querySelector('.js-loading-screen');
 
 	// Canvas elements
 
@@ -30,14 +31,14 @@ const mamba_game = (function () {
 	// Menu elements					
 	
 	const scoreElement = document.getElementById('score');
-	const bronzePointsElement = document.getElementById('bronze-points');
-	const silverPointsElement = document.getElementById('silver-points');
+	const bronzeValueElement = document.querySelector('.bronze-value');
+	const silverValueElement = document.querySelector('.silver-value');
 
 	// Game settings
 
 	const frameLength = 92; 	
 	let currentFrame = 0;
-	let pause = false;
+	let isPaused = false;
 	let isGameOver = false;
 	let bronzeCallsLeft = 4;
 	let goldCallsLeft = 12;	
@@ -51,7 +52,8 @@ const mamba_game = (function () {
 	const storage = window.localStorage;
 	let globalHighscores = [];
 	let localHighscores = [];
-	let highscoreString = '';	
+	let highscoreString = null;	
+	let capppedHighscoreString = '';
 	let processedHighscoreString = '';
 	let globalHighscoreDatabase = firebase.database().ref().child('highscores');
 	globalHighscoreDatabase.on('value', function (snap) {
@@ -96,6 +98,15 @@ const mamba_game = (function () {
 		return sortedArray;
 	}	
 
+	function capArray (array, capAmount) {
+		if (array.length > capAmount) {
+			array.pop();
+			capArray(array, capAmount);
+		} else {
+			return 
+		}
+	}
+
 	function getLocalHighscores () {
 		highscoreString = storage.getItem('highscores');
 	}
@@ -109,6 +120,12 @@ const mamba_game = (function () {
 				localHighscores.push(highscore);
 			});
 			sort(localHighscores);
+			capArray(localHighscores, 40);
+			let tempArray = [];
+			localHighscores.forEach(function (highscore) {
+				tempArray.push(highscore.name + '-' + highscore.score);
+			})
+			capppedHighscoreString = tempArray.join(';');
 		} else {
 			console.log('no highscore set');
 		}
@@ -135,10 +152,10 @@ const mamba_game = (function () {
 				}, 80)
 			}
 			if (key == 80) {
-				if (pause == false) {
-					pause = true;
+				if (isPaused == false) {
+					isPaused = true;
 				} else if (!isGameOver) {
-					pause = false;
+					isPaused = false;
 					gameLoop();
 				}
 			}
@@ -148,19 +165,20 @@ const mamba_game = (function () {
 	// Start game
 
 	function init () {
-		const screen = document.querySelector('.js-loading-screen');
-		fadeOut(screen);
+		fadeOut(loadingScreen);
 		bindEvents();
 		mamba.setWallThreshold();
 		getLocalHighscores();
 		processLocalHighscore(highscoreString);						
 		gameLoop();	
-		if (!isGameOver) {
-			setInterval(function () {
+/*		const logDrawops = setInterval(function () {
+			if (isGameOver) {
+				clearInterval(logDrawops);
+			} else {
 				console.log('drawOps', drawOps);
-				drawOps = 0;
-			}, 1000);			
-		}
+				drawOps = 0;				
+			}
+		}, 1000);*/			
 	}
 
 	function gameLoop () {
@@ -174,7 +192,7 @@ const mamba_game = (function () {
 			gameOver(positions, mamba.positions[0]);
 			return
 		}								
-		if (pause == true) {
+		if (isPaused == true) {
 			return
 		}		
 		setTimeout(gameLoop, frameLength);					
@@ -182,12 +200,7 @@ const mamba_game = (function () {
 
 	const mamba = (function () {
 		let previousPositions;							
-		let positions = [];									
-		positions.push([12, 10, 'mamba']);
-		positions.push([11, 10, 'mamba']);
-		positions.push([10, 10, 'mamba']);
-		positions.push([9, 10, 'mamba']);
-		positions.push([8, 10, 'mamba']);
+		let positions = [[12, 10, 'mamba'], [11, 10, 'mamba'], [10, 10, 'mamba'], [9, 10, 'mamba'], [8, 10, 'mamba']];	
 		let direction = 'right';									
 		let nextDirection = direction;
 		let wallThreshold;
@@ -347,7 +360,7 @@ const mamba_game = (function () {
 		let amount = random(5, 12);
 		let bronzePositions = [];
 		let removeCounter = 60;
-		let removeIn = random(40, 80);
+		let removeIn = random(50, 100);
 
 		function setRemoveIn (removeCounter) {
 			removeIn = random(removeCounter / 2, removeCounter);
@@ -399,23 +412,21 @@ const mamba_game = (function () {
 			let mambaPositions = mamba.positions;
 			let wallPositions = wall.getPositions();
 			let silverPositions = silver.positions;
-			if (bronzePositions.length < 30) {	// Never have more than 30 bronze blocks
-				if (
-					!checkCoordinateInArray(randomPosition, mambaPositions) && 
-					!checkCoordinateInArray(randomPosition, wallPositions) &&
-					!checkCoordinateInArray(randomPosition, bronzePositions) &&
-					!checkCoordinateInArray(randomPosition, silverPositions)
-					) {
-					randomPosition.push('bronze');
-					bronzePositions.push(randomPosition);
+			if (
+				!checkCoordinateInArray(randomPosition, mambaPositions) && 
+				!checkCoordinateInArray(randomPosition, wallPositions) &&
+				!checkCoordinateInArray(randomPosition, bronzePositions) &&
+				!checkCoordinateInArray(randomPosition, silverPositions)
+				) {
+				randomPosition.push('bronze');
+				bronzePositions.push(randomPosition);
+			} else {
+				if (bronzeCallsLeft > 0) {
+					addBronze();
 				} else {
-					if (bronzeCallsLeft > 0) {
-						addBronze();
-					} else {
-						bronzeCallsLeft = 10;
-					}
-				}				
-			}
+					bronzeCallsLeft = 10;
+				}
+			}				
 		}
 
 		return {
@@ -588,8 +599,8 @@ const mamba_game = (function () {
 
 		function displayScore () {
 			scoreElement.innerHTML = score;
-			// bronzePointsElement.innerHTML = multiplier;
-			// silverPointsElement.innerHTML = 10 * multiplier;
+			bronzeValueElement.innerHTML = multiplier;
+			silverValueElement.innerHTML = 10 * multiplier;
 		}
 
 		function incrementMultiplier () {
@@ -600,11 +611,16 @@ const mamba_game = (function () {
 			return score;
 		}
 
+		function reset () {
+			score = 0;
+		}
+
 		return  {
 			increaseScore: increaseScore,
 			displayScore: displayScore,
 			incrementMultiplier: incrementMultiplier,
 			getScore: getScore,
+			reset: reset,
 			getMultiplier: getMultiplier
 		}
 	})();
@@ -727,29 +743,18 @@ const mamba_game = (function () {
 		function isHighscore (endScore) {
 			if (localHighscores.length < 40) {
 				return true;
-			} else if (endScore > localHighscores[localHighscores.length - 1].score) {
+			} else if (endScore > localHighscores[39].score) {
 				return true
 			} else {
 				return false;
 			}
 		}
 
-		function capArray (array, capAmount) {
-			if (array.length > capAmount) {
-				array.pop();
-				capArray(array, capAmount);
-			} else {
-				return 
-			}
-		}
-
-		function setLocalHighcores (processedHighscoreString, name, endScore) {
-			
-			if (highscoreString == '') {
+		function setLocalHighcores (highscoreString, name, endScore) {
+			if (highscoreString == null) {
 				processedHighscoreString = name + '-' + endScore;
 			} else {
-				processedHighscoreString = highscoreString;
-				processedHighscoreString += ';' + name + '-' + endScore;	
+				processedHighscoreString = highscoreString + ';' + name + '-' + endScore;	
 				capArray(localHighscores, 39);
 			}
 			localHighscores.push({name: name, score: endScore});
@@ -767,7 +772,8 @@ const mamba_game = (function () {
 				e.preventDefault();
 				highscoreForm.removeEventListener('submit', handleSubmit);
 				const name = highscoreInput.value;
-				setLocalHighcores(processedHighscoreString, name, endScore);
+				setLocalHighcores(capppedHighscoreString, name, endScore);
+				highscoreSubmit.style.display = "none";
 				renderHighscores('local');
 				showHighscores('local');
 			}
@@ -789,10 +795,7 @@ const mamba_game = (function () {
 					}
 				}
 			}
-
-			console.log('1', localHighscores);
 			capArray(localHighscores, 40);
-			console.log('2', localHighscores);
 			const highscoreElements = document.querySelectorAll('.highscore');
 			localHighscores.forEach(function (highscore, index) {
 				const element = highscoreElements[index];
@@ -806,7 +809,15 @@ const mamba_game = (function () {
 		function showHighscores(type) {
 			document.querySelector('.highscores').style.display = 'block';
 			document.querySelector('.local-highscores').style.display = 'block';
+			document.addEventListener('keydown', function (e) {
+				if (e.keyCode == 13) {
+					resetGame();
+				}
+			});
+		}
 
+		function resetGame () {
+			location.reload();
 		}
 
 		// Draw game over animation
@@ -878,7 +889,6 @@ const mamba_game = (function () {
 			if (isHighscore(endScore)) {
 				showHighscoreSubmit(endScore);
 			} else {
-				console.log('show highscores');
 				renderHighscores('local');
 				showHighscores('local');
 			}
@@ -906,6 +916,8 @@ function fadeOut(element) {
 
     if (element.style.opacity > 0) {
       (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+    } else {
+    	element.style.zIndex = -1;
     }
   };
   tick();

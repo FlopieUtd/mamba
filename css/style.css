@@ -57,10 +57,52 @@ body {
 	color: yellow;
 }
 
+.white-text {
+	color: white;
+}
+
+.bronze-img, .silver-img {
+	height: 32px;
+	width: 32px;
+}
+
+.equals {
+	margin: 0 1rem;
+}
+
+.value {
+	display: inline-block;
+	text-align: right;
+}
+
+.legend {
+	display: flex;
+}
+
+.legend__bronze-value, .legend__silver-value {
+	display: inline-flex;
+	justify-content: space-between;
+	margin-left: 2rem;
+}
+
+.legend__score-container {
+	display: flex;
+	margin-left: 2rem;
+}
+
+.legend__bronze-value .value {
+	min-width: 2rem;
+}
+
+.legend__silver-value .value {
+	min-width: 3rem;
+}
+
 .legend__score {
 	display: inline-block;
 	min-width: 100px;
 	text-align: right;
+	margin-left: 1rem;
 }
 
 /* Loading screen */
@@ -95,6 +137,7 @@ body {
 	transform: translate(-50%, -50%);	
 	padding: 4px;
 	background: lightgray;
+	z-index: 1;
 }
 
 .highscore-submit__form {
@@ -111,17 +154,21 @@ body {
 	background: lime;
 	outline: none;
 	border: none;
+	cursor: default;
+	caret-color: lime;
 }
 
 /* Highscore screens */
 
 .highscores, .local-highscores, .global-highscores {
 	display: none;
+	position: relative;	
 }
 
 .highscore-header, .topscore-holder {
+	display: flex;
+	justify-content: center;
 	width: 100%;
-	text-align: center;
 }
 
 .body {
@@ -147,6 +194,10 @@ body {
 	margin-top: 12px;
 }
 
+.topscore-container {
+	text-align: center;
+}
+
 .topscore {
 	background: red;
 	color: yellow;
@@ -159,17 +210,69 @@ body {
 	max-width: 320px;
 }
 
+.press-enter {
+	width: 100%;
+	text-align: center;
+}
+
+.highscore-label, .switch {
+	display: inline-block;
+}
+
+
+.switch {
+	cursor: pointer;
+}
+
+
 .place {
 	padding-right: 1rem;
 }
 
-@media (max-width: 1220px) {
+@media (max-width: 1300px) {
 	.highscores, .header {
-		font-size: 2.5vw;
+		font-size: 2.1vw;
+	}
+
+	.title {
+		padding: 0 1vw;	
+	}
+
+	.legend__score {
+		min-width: 8vw;
+	}
+
+	.bronze-img, .silver-img {
+		width: 2.4vw;
+		height: 2.4vw;
+	}
+
+	.legend__bronze-value, .legend__silver-value, .legend__score-container {
+		margin-left: 2vw;
+	}
+
+	.legend__bronze-value .value {
+	min-width: 3vw;
+	}
+
+	.legend__silver-value .value {
+		min-width: 4vw;
+	}
+
+	.equals {
+		margin: 0 1vw;
+	}
+
+	.highscores {
+		padding: 2vw;
 	}
 
 	.body {
 		margin: 2vw 0;
+	}
+
+	.column {
+		width: 22.5vw;
 	}
 
 	.highscore {
@@ -182,10 +285,10 @@ body {
 	}
 
 	.header {
-		height: 2vw;
+		height: 2.4vw;
 	}
 
 	.canvas {
-		border: 2.6vw solid blue;
+		border: 2.4vw solid blue;
 	}
 }
