@@ -219,6 +219,12 @@ body {
 	padding-right: 1rem;
 }
 
+.credits {
+	font-family: Courier;
+	color: #151515;
+	text-align: center;
+}
+
 @media (max-width: 1300px) {
 	.highscores, .header {
 		font-size: 2vw;

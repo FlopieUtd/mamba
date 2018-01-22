@@ -463,7 +463,7 @@ const mamba_game = (function () {
 	const gold = (function () {
 
 		let goldPosition;
-		let goldLifeSpan;
+		let lifeSpan;
 		let endFrame;
 
 		function addGold () {
@@ -481,8 +481,7 @@ const mamba_game = (function () {
 				!checkCoordinateInArray(randomPosition, silverPositions)
 				) {
 				goldPosition = randomPosition;
-				
-				LifeSpan = random(3, 8) * 10;
+				lifeSpan = random(4, 8) * 10;
 			} else {
 				if (goldCallsLeft > 0) {
 					addGold();
@@ -493,7 +492,7 @@ const mamba_game = (function () {
 		}
 
 		function setLifeSpan () {
-			lifeSpan = random(3, 7) * 10; 
+			lifeSpan = random(4, 8) * 10; 
 		}
 
 		function startGoldDecay (time) {
@@ -959,7 +958,6 @@ const mamba_game = (function () {
 	return {
 		init: init
 	}
-
 })();
 
 
