@@ -812,7 +812,7 @@ const mamba_game = (function () {
 				score: score
 			})
 			sort(globalHighscores);
-			capHighscore(globalHighscores, 40);
+			capArray(globalHighscores, 40);
 		}
 
 		function writeGlobalHighscores (globalHighscores) {
