@@ -303,7 +303,7 @@ const mamba_game = (function () {
 				const newWallArray = [];
 				const tempArray = positions.splice(6);
 				tempArray.forEach(function (position) {
-					newWallArray.push([position[0], position[1], 'wall', random(1, 200)]);
+					newWallArray.push([position[0], position[1], 'wall', random(1, 250)]);
 				})
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
