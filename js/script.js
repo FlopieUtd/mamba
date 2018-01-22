@@ -302,7 +302,7 @@ const mamba_game = (function () {
 				const newWallArray = [];
 				const tempArray = positions.splice(6);
 				tempArray.forEach(function (position) {
-					newWallArray.push([position[0], position[1], 'wall', random(1, 250)]);
+					newWallArray.push([position[0], position[1], 'wall', random(1, 280)]);
 				})
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
@@ -362,11 +362,10 @@ const mamba_game = (function () {
 
 		let amount = random(5, 12);
 		let bronzePositions = [];
-		let removeCounter = 60;
 		let removeIn = random(50, 100);
 
-		function setRemoveIn (removeCounter) {
-			removeIn = random(removeCounter / 2, removeCounter);
+		function setRemoveIn () {
+			removeIn = random(50, 100);
 		}
 
 		for (i = 0; i < amount; i++) {
@@ -385,10 +384,7 @@ const mamba_game = (function () {
 				bronzeAmount = bronzePositions.length;
 				index = random(0, bronzeAmount);
 				bronzePositions.splice(index, 1);
-				if (removeCounter > 6) {
-					removeCounter--;
-				}
-				setRemoveIn(removeCounter);
+				setRemoveIn();
 			}
 		}
 
