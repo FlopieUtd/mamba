@@ -59,7 +59,6 @@ const mamba_game = (function () {
 	globalHighscoreDatabase.on('value', function (snap) {
 		globalHighscores = snap.val();
 		if (globalHighscores.length > 40) {globalHighscores.pop();}
-		console.log(globalHighscores);
 	});	
 	let highscoreView = 'local';
 	let handlingSubmit = false;
@@ -757,7 +756,6 @@ const mamba_game = (function () {
 		function isGlobalHighscore (globalHighscores, endScore) {
 			const lowestHighscore = globalHighscores.slice(-1)[0].score;
 			if (globalHighscores.length < 40 && endScore > 0 || endScore > globalHighscores) {
-				console.log('global highscore');
 				return true;
 			} else {
 				return false;
@@ -826,13 +824,11 @@ const mamba_game = (function () {
 		}
 
 		function renderHighscores (type) {
-			console.log(type);
 			let currentHighscores = [];
 			if (type == 'local') {
 				currentHighscores = localHighscores;
 			} else {
 				currentHighscores = globalHighscores;
-				console.log(currentHighscores);
 			}
 			let place = 2;
 			const columns = document.querySelectorAll('.' + type + '-highscores .column');
