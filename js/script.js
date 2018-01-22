@@ -838,7 +838,7 @@ const mamba_game = (function () {
 			for (i = 0; i < 3; i++) {
 				const column = columns[i];
 				for (j = 0; j < 13; j++) {
-					column.innerHTML += `<div class="highscore highscore-${place}"><span><span class="place">${place}.</span><span class="name"></span></span><span class="score"></span></div>`;
+					column.innerHTML += '<div class="highscore highscore-' + place +'"><span><span class="place">' + place + '.</span><span class="name"></span></span><span class="score"></span></div>';
 					place++;
 				}
 			}
