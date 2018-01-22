@@ -210,7 +210,7 @@ const mamba_game = (function () {
 		let wallThreshold;
 
 		function setWallThreshold () {
-			wallThreshold = random(18, 36);
+			wallThreshold = random(18, 30);
 		}
 
 		function setDirection (newDirection) {					
