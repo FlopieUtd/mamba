@@ -789,12 +789,13 @@ const mamba_game = (function () {
 				setLocalHighcores(capppedHighscoreString, name, endScore);
 				highscoreSubmit.style.display = "none";
 				renderHighscores('local');
-				renderHighscores('global');
 				if (isGlobalHighscore(globalHighscores, endScore)) {
 					addGlobalHighscore(name, endScore);
 					writeGlobalHighscores(globalHighscores);
+					renderHighscores('global');
 					showHighscores('global');
 				} else {
+					renderHighscores('global');
 					showHighscores('local');
 				}
 				handlingSubmit = false;
