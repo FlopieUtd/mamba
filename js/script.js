@@ -59,7 +59,11 @@ const mamba_game = (function () {
 	globalHighscoreDatabase.on('value', function (snap) {
 		globalHighscores = snap.val();
 		if (globalHighscores.length > 40) {globalHighscores.pop();}
+		console.log(globalHighscores);
 	});	
+	let highscoreView = 'local';
+	let handlingSubmit = false;
+
 
 	// Development 
 
@@ -750,6 +754,16 @@ const mamba_game = (function () {
 			}
 		}
 
+		function isGlobalHighscore (globalHighscores, endScore) {
+			const lowestHighscore = globalHighscores.slice(-1)[0].score;
+			if (globalHighscores.length < 40 && endScore > 0 || endScore > globalHighscores) {
+				console.log('global highscore');
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		function setLocalHighcores (highscoreString, name, endScore) {
 			if (highscoreString == null) {
 				processedHighscoreString = name + '-' + endScore;
@@ -775,29 +789,62 @@ const mamba_game = (function () {
 				setLocalHighcores(capppedHighscoreString, name, endScore);
 				highscoreSubmit.style.display = "none";
 				renderHighscores('local');
-				showHighscores('local');
+				renderHighscores('global');
+				if (isGlobalHighscore(globalHighscores, endScore)) {
+					addGlobalHighscore(name, endScore);
+					writeGlobalHighscores(globalHighscores);
+					showHighscores('global');
+				} else {
+					showHighscores('local');
+				}
+				handlingSubmit = false;
 			}
 
-			highscoreSubmit.style.display = "inline-block";
+			highscoreSubmit.style.display = "inline-block";		
 			highscoreInput.focus();
+			handlingSubmit = true;				
 			highscoreForm.addEventListener('submit', handleSubmit);
 		}
 
+		function addGlobalHighscore (name, score) {
+			globalHighscores.push({
+				name: name,
+				score: score
+			})
+			sort(globalHighscores);
+			capHighscore(globalHighscores, 40);
+		}
+
+		function writeGlobalHighscores (globalHighscores) {
+			globalHighscores.forEach(function (highscore, index) {
+				firebase.database().ref().child('highscores').child(index).set({
+				    name: highscore.name,
+				    score: highscore.score,
+				});
+			})
+		}
+
 		function renderHighscores (type) {
+			console.log(type);
+			let currentHighscores = [];
 			if (type == 'local') {
-				let place = 2;
-				const columns = document.querySelectorAll('.' + type + '-highscores .column');
-				for (i = 0; i < 3; i++) {
-					const column = columns[i];
-					for (j = 0; j < 13; j++) {
-						column.innerHTML += `<div class="highscore highscore-${place}"><span><span class="place">${place}.</span><span class="name"></span></span><span class="score"></span></div>`;
-						place++;
-					}
+				currentHighscores = localHighscores;
+			} else {
+				currentHighscores = globalHighscores;
+				console.log(currentHighscores);
+			}
+			let place = 2;
+			const columns = document.querySelectorAll('.' + type + '-highscores .column');
+			for (i = 0; i < 3; i++) {
+				const column = columns[i];
+				for (j = 0; j < 13; j++) {
+					column.innerHTML += `<div class="highscore highscore-${place}"><span><span class="place">${place}.</span><span class="name"></span></span><span class="score"></span></div>`;
+					place++;
 				}
 			}
-			capArray(localHighscores, 40);
-			const highscoreElements = document.querySelectorAll('.highscore');
-			localHighscores.forEach(function (highscore, index) {
+			capArray(currentHighscores, 40);
+			const highscoreElements = document.querySelectorAll('.' + type + '-highscores .highscore');
+			currentHighscores.forEach(function (highscore, index) {
 				const element = highscoreElements[index];
 				const nameElement = element.querySelector('.name');
 				nameElement.innerHTML = highscore.name;
@@ -808,12 +855,31 @@ const mamba_game = (function () {
 
 		function showHighscores(type) {
 			document.querySelector('.highscores').style.display = 'block';
-			document.querySelector('.local-highscores').style.display = 'block';
+			document.querySelector('.local-highscores').style.display = 'none';
+			document.querySelector('.global-highscores').style.display = 'none';
+			document.querySelector('.' + type + '-highscores').style.display = 'block';
+		}
+
+		function addHighscoreEventListeners () {
 			document.addEventListener('keydown', function (e) {
-				if (e.keyCode == 13) {
-					resetGame();
+				if (!handlingSubmit) {
+					if (e.keyCode == 13) {
+						resetGame();
+					} else if (e.keyCode == 32) {
+						toggleHighscores(highscoreView);
+					}					
 				}
 			});
+		}
+
+		function toggleHighscores (currentView) {
+			if (currentView == 'local') {
+				showHighscores('global');
+				highscoreView = 'global';
+			} else {
+				showHighscores('local');
+				highscoreView = 'local';
+			}
 		}
 
 		function resetGame () {
@@ -890,8 +956,10 @@ const mamba_game = (function () {
 				showHighscoreSubmit(endScore);
 			} else {
 				renderHighscores('local');
+				renderHighscores('global');
 				showHighscores('local');
 			}
+			addHighscoreEventListeners();
 		}, 1500);
 	}
 

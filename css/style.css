@@ -210,20 +210,10 @@ body {
 	max-width: 320px;
 }
 
-.press-enter {
+.footer-line {
 	width: 100%;
 	text-align: center;
 }
-
-.highscore-label, .switch {
-	display: inline-block;
-}
-
-
-.switch {
-	cursor: pointer;
-}
-
 
 .place {
 	padding-right: 1rem;
@@ -231,7 +221,7 @@ body {
 
 @media (max-width: 1300px) {
 	.highscores, .header {
-		font-size: 2.1vw;
+		font-size: 2vw;
 	}
 
 	.title {
@@ -277,7 +267,7 @@ body {
 
 	.highscore {
 		width: 22vw;
-		margin-top: 1.2vw;
+		margin-top: 1vw;
 	}
 
 	.place {
