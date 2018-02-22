@@ -116,13 +116,10 @@ const mamba_game = (function () {
 
 	function processLocalHighscore (highscoreString) {
 		if (highscoreString != null) {
-			console.log('highscore string', highscoreString);
 			const highscoreStrings = highscoreString.split(';');
-			console.log('highscore strings', highscoreStrings);
 			highscoreStrings.forEach(function (string) {
 				if (string != "") {
 					const stringItems = string.split('-');
-					console.log('string items', stringItems);
 					const highscore = {name: stringItems[0], score: Number(stringItems[1])};
 					localHighscores.push(highscore);
 				}
