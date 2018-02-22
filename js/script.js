@@ -116,11 +116,16 @@ const mamba_game = (function () {
 
 	function processLocalHighscore (highscoreString) {
 		if (highscoreString != null) {
+			console.log('highscore string', highscoreString);
 			const highscoreStrings = highscoreString.split(';');
+			console.log('highscore strings', highscoreStrings);
 			highscoreStrings.forEach(function (string) {
-				const stringItems = string.split('-');
-				const highscore = {name: stringItems[0], score: Number(stringItems[1])};
-				localHighscores.push(highscore);
+				if (string != "") {
+					const stringItems = string.split('-');
+					console.log('string items', stringItems);
+					const highscore = {name: stringItems[0], score: Number(stringItems[1])};
+					localHighscores.push(highscore);
+				}
 			});
 			sort(localHighscores);
 			capArray(localHighscores, 40);
@@ -360,7 +365,7 @@ const mamba_game = (function () {
 
 	const bronze = (function(){
 
-		let amount = random(5, 12);
+		let amount = random(6, 12);
 		let bronzePositions = [];
 		let removeIn = random(50, 100);
 
@@ -738,6 +743,8 @@ const mamba_game = (function () {
 
 		isGameOver = true;
 
+		console.log(endScore);
+
 		function isHighscore (endScore) {
 			if (localHighscores.length < 40) {
 				return true;
@@ -750,7 +757,7 @@ const mamba_game = (function () {
 
 		function isGlobalHighscore (globalHighscores, endScore) {
 			const lowestHighscore = globalHighscores.slice(-1)[0].score;
-			if (globalHighscores.length < 40 && endScore > 0 || endScore > globalHighscores) {
+			if (globalHighscores.length < 40 && endScore > 0 || endScore > lowestHighscore) {
 				return true;
 			} else {
 				return false;
