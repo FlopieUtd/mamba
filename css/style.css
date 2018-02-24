@@ -221,7 +221,7 @@ body {
 
 .credits {
 	font-family: Courier;
-	color: #151515;
+	color: rgba(255,255,255,0.3);
 	text-align: center;
 }
 
