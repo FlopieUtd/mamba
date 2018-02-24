@@ -47,6 +47,19 @@ const mamba_game = (function () {
 
 	let allPreviousPositions = [];
 
+	// Firebase
+
+  const config = {
+    apiKey: "AIzaSyCZk2b_LDNciu8RhEIQN8WSgoHjjXIrSR0",
+    authDomain: "mamba-highscores.firebaseapp.com",
+    databaseURL: "https://mamba-highscores.firebaseio.com",
+    projectId: "mamba-highscores",
+    storageBucket: "",
+    messagingSenderId: "412347433938"
+	};
+
+	firebase.initializeApp(config);
+
 	// Highscores
 
 	const storage = window.localStorage;
@@ -62,7 +75,6 @@ const mamba_game = (function () {
 	});	
 	let highscoreView = 'local';
 	let handlingSubmit = false;
-
 
 	// Development 
 
@@ -787,6 +799,7 @@ const mamba_game = (function () {
 				highscoreSubmit.style.display = "none";
 				renderHighscores('local');
 				if (isGlobalHighscore(globalHighscores, endScore)) {
+					firebase.auth().signInAnonymously();
 					addGlobalHighscore(name, endScore);
 					writeGlobalHighscores(globalHighscores);
 					renderHighscores('global');
