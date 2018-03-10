@@ -64,6 +64,10 @@ body {
 	z-index: 1;
 }
 
+.toggle-sound img {
+	height: 80%;
+}
+
 .toggle-sound--on .toggle-sound__off {
 	display: none;
 }
@@ -273,6 +277,7 @@ body {
 
 	.title {
 		padding: 0 1vw;	
+		margin-right: 1vw;
 	}
 
 	.legend__score {
