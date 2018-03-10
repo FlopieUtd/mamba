@@ -36,7 +36,7 @@ const mamba_game = (function () {
 
 	// Game settings
 
-	const frameLength = 92; 	
+	const frameLength = 95; 	
 	let currentFrame = 0;
 	let isPaused = false;
 	let isGameOver = false;
@@ -75,6 +75,51 @@ const mamba_game = (function () {
 	});	
 	let highscoreView = 'local';
 	let handlingSubmit = false;
+
+	// Sounds
+
+	if (storage.getItem('sound') == null) {
+		window.sound = 1;
+		document.querySelector('.toggle-sound').classList.add('toggle-sound--on');
+	} else {
+		window.sound = Number(storage.getItem('sound'));
+		setTimeout(function(){
+			if (window.sound == 1) {
+				document.querySelector('.toggle-sound').classList.add('toggle-sound--on');
+			} else {
+				document.querySelector('.toggle-sound').classList.add('toggle-sound--off');
+			}
+		},0)
+	}
+
+
+	
+	const silverAudio = new Audio('./silver.wav');
+	const bronzeAudio = new Audio('./bronze.wav');
+	const gameOverAudio = new Audio('./game-over.wav');
+
+	silverAudio.preload = 'auto';
+	bronzeAudio.preload = 'auto';
+	gameOverAudio.preload = 'auto';
+
+	silverAudio.load();
+	bronzeAudio.load();
+	gameOverAudio.load();
+
+	function playSound (type) {
+		if (sound) {
+			if (type == 'bronze') {
+				bronzeAudioInstance = bronzeAudio.cloneNode();
+				bronzeAudioInstance.play();
+			} else if (type == 'silver') {
+				silverAudioInstance = silverAudio.cloneNode();
+				silverAudioInstance.play();
+			} else if (type == 'gameOver') {
+				gameOverAudioInstance = gameOverAudio.cloneNode();
+				gameOverAudioInstance.play();
+			}
+		}
+	}
 
 	// Development 
 
@@ -282,6 +327,7 @@ const mamba_game = (function () {
 						wall.decrementLifeSpan(1);
 						wall.removeWall();
 						bronze.decrementRemoveCounter();
+						playSound('bronze');
 					}
 				});
 
@@ -293,6 +339,7 @@ const mamba_game = (function () {
 						score.increaseScore(10);
 						wall.decrementLifeSpan(0.1);
 						wall.removeWall();
+						playSound('silver');
 					}
 				});
 
@@ -303,6 +350,7 @@ const mamba_game = (function () {
 						gold.removeGold();
 						const goldWorth = random(1, 10) * 10;
 						score.increaseScore(goldWorth);
+						playSound('silver');
 					}					
 				}
 			}						
@@ -316,7 +364,7 @@ const mamba_game = (function () {
 				const newWallArray = [];
 				const tempArray = positions.splice(6);
 				tempArray.forEach(function (position) {
-					newWallArray.push([position[0], position[1], 'wall', random(1, 280)]);
+					newWallArray.push([position[0], position[1], 'wall', random(1, 250)]);
 				})
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
@@ -721,14 +769,14 @@ const mamba_game = (function () {
 				case 'gold':
 					{
 						drawOps++;
-						ctx.fillStyle = 'lime';
+						ctx.fillStyle = '#55ff55';
 						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
 					break;
 				case 'wall':
 					{
 						drawOps++;
-						ctx.fillStyle = '#dd7368';
+						ctx.fillStyle = '#aa5858';
 						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
 					break;
@@ -913,14 +961,15 @@ const mamba_game = (function () {
 
 			if (times == 3) {
 				drawOps++;
-				ctx.fillStyle = '#dd7368';
+				ctx.fillStyle = '#aa5858';
 				ctx.fillRect(collisionPosition[0] * blockSize, collisionPosition[1] * blockSize, blockSize, blockSize);				
 			}
 
 			if (times > 0) {
-				drawBackground(ctx, 'blue');
+				drawBackground(ctx, '#0000aa');
 				drawBody(ctx, 'white');
 				drawHead(ctx, 'white');
+				playSound('gameOver');
 				setTimeout(function () {
 					drawBackground(ctx, 'black');
 					drawBody(ctx, 'yellow');
@@ -977,6 +1026,20 @@ const mamba_game = (function () {
 	}
 })();
 
+document.querySelector('.toggle-sound').addEventListener('click', function (e) {
+	const buttonClasslist = e.target.closest('.toggle-sound').classList;
+	if (buttonClasslist.contains('toggle-sound--on')) {
+		window.sound = 0;
+		window.localStorage.setItem('sound', 0);
+		buttonClasslist.remove('toggle-sound--on');
+		buttonClasslist.add('toggle-sound--off');
+	} else {
+		window.sound = 1;
+		window.localStorage.setItem('sound', 1);
+		buttonClasslist.remove('toggle-sound--off');
+		buttonClasslist.add('toggle-sound--on');
+	}
+});
 
 setTimeout(function () {
 	mamba_game.init();

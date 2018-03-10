@@ -34,7 +34,7 @@ body {
 	background: black;
 	max-width: 100%;	
 	max-height: 100vh;
-	border: 32px solid blue;
+	border: 32px solid #0000aa;
 }
 
 /* Header */
@@ -42,19 +42,39 @@ body {
 .header {
 	height: 32px;
 	width: 100%;
-	background: blue;
+	background: #0000aa;
 	display: flex;
 	justify-content: space-between;
 	font-size: 1.8rem;	
 }
 
+.header__left {
+	display: flex;
+}
+
 .title {
 	padding: 0 1rem;	
+	margin-right: 1rem;
+}
+
+.toggle-sound {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.toggle-sound--on .toggle-sound__off {
+	display: none;
+}
+
+.toggle-sound--off .toggle-sound__on {
+	display: none;
 }
 
 .yellow-text {
-	background: red;
-	color: yellow;
+	background: #aa0000;
+	color: #ffff55;
 }
 
 .white-text {
@@ -116,10 +136,11 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	z-index: 2;
 }
 
 .loading-screen h1 {
-	color: yellow;
+	color: #ffff55;
 	font-size: 20vw;
 }
 
@@ -141,7 +162,7 @@ body {
 }
 
 .highscore-submit__form {
-	background: lightgray;
+	background: #aaaaaa;
 	font-size: 1.8rem;
 	padding: 0.5rem 0.5rem;
 	border: 8px double black;
@@ -151,11 +172,11 @@ body {
 	font-size: 1.8rem;
 	font-family: "perfect dos vga";
 	width: 11rem;
-	background: lime;
+	background: #00aa00;
 	outline: none;
 	border: none;
 	cursor: default;
-	caret-color: lime;
+	caret-color: #00aa00;
 }
 
 /* Highscore screens */
@@ -171,27 +192,42 @@ body {
 	width: 100%;
 }
 
+.highscore-label {
+	color: white;
+	background: #aa0000;
+	padding: 0 1rem;
+}
+
 .body {
-	margin: 32px 0;
+	margin: 2rem 0;
 	display: flex;
 	justify-content: space-around;
 }
 
 .highscores {
-	background: blue;
+	background: #00aaaa;
+	position: absolute;
+	color: #0000aa;
+	padding: 0 32px;
+	font-size: 1.8rem;
+}
+
+.highscores-wrapper {
+	position: fixed;
 	width: 100%;
 	height: 100%;
-	position: absolute;
-	color: white;
-	padding: 32px;
-	font-size: 1.8rem;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .highscore {
 	display: inline-flex;
 	justify-content: space-between;
-	width: 320px;
-	margin-top: 12px;
+	width: 340px;
+	margin-top: 6px;
 }
 
 .topscore-container {
@@ -199,15 +235,20 @@ body {
 }
 
 .topscore {
-	background: red;
-	color: yellow;
+	color: #aa0000;
+}
+
+.body > div:not(:last-of-type) {
+	border-right: 4px solid #0000aa;
+	padding-right: 1.5rem;		
+	margin-right: 1.5rem;
 }
 
 .column {
 	display: inline-flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	max-width: 320px;
+	max-width: 340px;
 }
 
 .footer-line {
@@ -260,7 +301,7 @@ body {
 	}
 
 	.highscores {
-		padding: 2vw;
+		padding: 0 2vw;
 	}
 
 	.body {
@@ -272,8 +313,8 @@ body {
 	}
 
 	.highscore {
-		width: 22vw;
-		margin-top: 1vw;
+		width: 25vw;
+		margin-top: .5vw;
 	}
 
 	.place {
@@ -285,6 +326,6 @@ body {
 	}
 
 	.canvas {
-		border: 2.4vw solid blue;
+		border: 2.4vw solid #0000aa;
 	}
 }
