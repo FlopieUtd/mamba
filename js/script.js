@@ -348,7 +348,7 @@ const mamba_game = (function () {
 					if (equalCoordinates(positions[0], goldPosition)) {
 						grow(positions);
 						gold.removeGold();
-						const goldWorth = random(1, 10) * 10;
+						const goldWorth = random(1, 5) * 10;
 						score.increaseScore(goldWorth);
 						playSound('silver');
 					}					
