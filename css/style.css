@@ -272,7 +272,7 @@ body {
 
 @media (max-width: 1300px) {
 	.highscores, .header {
-		font-size: 2vw;
+		font-size: 1.9vw;
 	}
 
 	.title {
@@ -311,6 +311,11 @@ body {
 
 	.body {
 		margin: 2vw 0;
+	}
+
+	.body > div:not(:last-of-type) {
+		padding-right: 1.5vw;		
+		margin-right: 1.5vw;
 	}
 
 	.column {
