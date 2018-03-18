@@ -189,9 +189,7 @@ const mamba_game = (function () {
 				tempArray.push(highscore.name + '-' + highscore.score);
 			})
 			capppedHighscoreString = tempArray.join(';');
-		} else {
-			console.log('no highscore set');
-		}
+		} 
 	}
 
 	// Bind game controls
@@ -233,15 +231,7 @@ const mamba_game = (function () {
 		mamba.setWallThreshold();
 		getLocalHighscores();
 		processLocalHighscore(highscoreString);						
-		gameLoop();	
-/*		const logDrawops = setInterval(function () {
-			if (isGameOver) {
-				clearInterval(logDrawops);
-			} else {
-				console.log('drawOps', drawOps);
-				drawOps = 0;				
-			}
-		}, 1000);*/			
+		gameLoop();		
 	}
 
 	function gameLoop () {
@@ -362,7 +352,6 @@ const mamba_game = (function () {
 			}
 
 			if (positions.length >= wallThreshold) {
-				console.log(maxWallLifespan);
 				const newWallArray = [];
 				const tempArray = positions.splice(6);
 				tempArray.forEach(function (position) {
@@ -804,8 +793,6 @@ const mamba_game = (function () {
 		const endScore = score.getScore();
 
 		isGameOver = true;
-
-		console.log(endScore);
 
 		function isHighscore (endScore) {
 			if (localHighscores.length < 40) {
