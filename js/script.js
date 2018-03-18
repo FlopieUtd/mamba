@@ -42,7 +42,7 @@ const mamba_game = (function () {
 	let isGameOver = false;
 	let bronzeCallsLeft = 4;
 	let goldCallsLeft = 12;	
-	let maxWallLifespan = 200;
+	let maxWallLifespan = 225;
 
 	// Drawing variables
 
@@ -357,7 +357,7 @@ const mamba_game = (function () {
 				tempArray.forEach(function (position) {
 					newWallArray.push([position[0], position[1], 'wall', random(1, maxWallLifespan)]);
 				})
-				maxWallLifespan += 5;
+				if (maxWallLifespan < 300) {maxWallLifespan += 5;}
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
 				gold.startGoldDecay();
