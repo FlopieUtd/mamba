@@ -42,6 +42,7 @@ const mamba_game = (function () {
 	let isGameOver = false;
 	let bronzeCallsLeft = 4;
 	let goldCallsLeft = 12;	
+	let maxWallLifespan = 200;
 
 	// Drawing variables
 
@@ -361,11 +362,13 @@ const mamba_game = (function () {
 			}
 
 			if (positions.length >= wallThreshold) {
+				console.log(maxWallLifespan);
 				const newWallArray = [];
 				const tempArray = positions.splice(6);
 				tempArray.forEach(function (position) {
-					newWallArray.push([position[0], position[1], 'wall', random(1, 250)]);
+					newWallArray.push([position[0], position[1], 'wall', random(1, maxWallLifespan)]);
 				})
+				maxWallLifespan += 5;
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
 				gold.startGoldDecay();
@@ -468,26 +471,28 @@ const mamba_game = (function () {
 		}
 
 		function addBronze () {
-			bronzeCallsLeft--;
-			let randomPosition = getRandomPosition();
-			let mambaPositions = mamba.positions;
-			let wallPositions = wall.getPositions();
-			let silverPositions = silver.positions;
-			if (
-				!checkCoordinateInArray(randomPosition, mambaPositions) && 
-				!checkCoordinateInArray(randomPosition, wallPositions) &&
-				!checkCoordinateInArray(randomPosition, bronzePositions) &&
-				!checkCoordinateInArray(randomPosition, silverPositions)
-				) {
-				randomPosition.push('bronze');
-				bronzePositions.push(randomPosition);
-			} else {
-				if (bronzeCallsLeft > 0) {
-					addBronze();
+			if (bronzePositions.length < 32) {
+				bronzeCallsLeft--;
+				let randomPosition = getRandomPosition();
+				let mambaPositions = mamba.positions;
+				let wallPositions = wall.getPositions();
+				let silverPositions = silver.positions;
+				if (
+					!checkCoordinateInArray(randomPosition, mambaPositions) && 
+					!checkCoordinateInArray(randomPosition, wallPositions) &&
+					!checkCoordinateInArray(randomPosition, bronzePositions) &&
+					!checkCoordinateInArray(randomPosition, silverPositions)
+					) {
+					randomPosition.push('bronze');
+					bronzePositions.push(randomPosition);
 				} else {
-					bronzeCallsLeft = 10;
-				}
-			}				
+					if (bronzeCallsLeft > 0) {
+						addBronze();
+					} else {
+						bronzeCallsLeft = 10;
+					}
+				}	
+			}			
 		}
 
 		return {
