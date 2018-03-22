@@ -328,7 +328,7 @@ const mamba_game = (function () {
 						silver.removeSilver(positions[0]);
 						bronze.addBronze();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.1);
+						wall.decrementLifeSpan(0.15);
 						wall.removeWall();
 						playSound('silver');
 					}
@@ -460,7 +460,7 @@ const mamba_game = (function () {
 		}
 
 		function addBronze () {
-			if (bronzePositions.length < 32) {
+			if (bronzePositions.length < 40) {
 				bronzeCallsLeft--;
 				let randomPosition = getRandomPosition();
 				let mambaPositions = mamba.positions;
