@@ -42,7 +42,7 @@ const mamba_game = (function () {
 	let isGameOver = false;
 	let bronzeCallsLeft = 4;
 	let goldCallsLeft = 12;	
-	let maxWallLifespan = 235;
+	let maxWallLifespan = 240;
 
 	// Drawing variables
 
@@ -328,7 +328,7 @@ const mamba_game = (function () {
 						silver.removeSilver(positions[0]);
 						bronze.addBronze();
 						score.increaseScore(10);
-						wall.decrementLifeSpan(0.15);
+						wall.decrementLifeSpan(0.2);
 						wall.removeWall();
 						playSound('silver');
 					}
@@ -357,7 +357,7 @@ const mamba_game = (function () {
 				tempArray.forEach(function (position) {
 					newWallArray.push([position[0], position[1], 'wall', random(1, maxWallLifespan)]);
 				})
-				if (maxWallLifespan < 260) {maxWallLifespan += 5;}
+				if (maxWallLifespan < 260) {maxWallLifespan += 4;}
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
 				gold.startGoldDecay();
@@ -460,7 +460,7 @@ const mamba_game = (function () {
 		}
 
 		function addBronze () {
-			if (bronzePositions.length < 40) {
+			if (bronzePositions.length < 64) {
 				bronzeCallsLeft--;
 				let randomPosition = getRandomPosition();
 				let mambaPositions = mamba.positions;
