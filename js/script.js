@@ -36,7 +36,7 @@ const mamba_game = (function () {
 
 	// Game settings
 
-	const frameLength = 96; 	
+	const frameLength = 100; 	
 	let currentFrame = 0;
 	let isPaused = false;
 	let isGameOver = false;
