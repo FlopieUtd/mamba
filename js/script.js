@@ -27,6 +27,14 @@ const mamba_game = (function () {
 	whiteBodySVG.src = "images/body-white.svg";
 	const whiteHeadSVG = new Image(blockSize, blockSize);
 	whiteHeadSVG.src = "images/head-white.svg";	
+	const tailDownSVG = new Image(blockSize, blockSize);
+	tailDownSVG.src = "images/tail-down.svg";	
+	const tailUpSVG = new Image(blockSize, blockSize);
+	tailUpSVG.src = "images/tail-up.svg";	
+	const tailLeftSVG = new Image(blockSize, blockSize);
+	tailLeftSVG.src = "images/tail-left.svg";	
+	const tailRightSVG = new Image(blockSize, blockSize);
+	tailRightSVG.src = "images/tail-right.svg";	
 
 	// Menu elements					
 	
@@ -36,7 +44,7 @@ const mamba_game = (function () {
 
 	// Game settings
 
-	const frameLength = 100; 	
+	const frameLength = 96; 	
 	let currentFrame = 0;
 	let isPaused = false;
 	let isGameOver = false;
@@ -257,12 +265,40 @@ const mamba_game = (function () {
 		let direction = 'right';									
 		let nextDirection = direction;
 		let wallThreshold;
+		let tailDirection;
 
 		function setWallThreshold () {
-			wallThreshold = random(18, 30);
+			wallThreshold = random(16, 36);
 		}
 
-		function setDirection (newDirection) {					
+		function getTail () {
+			const tailPosition = positions[positions.length - 1];
+			const preTailPosition = positions[positions.length - 2];
+			if (tailPosition[0] > preTailPosition[0]) {
+				tailDirection = 'left';
+			}
+			if (tailPosition[0] < preTailPosition[0]) {
+				tailDirection = 'right';
+			}
+			if (tailPosition[1] > preTailPosition[1]) {
+				tailDirection = 'up';
+			}
+			if (tailPosition[1] < preTailPosition[1]) {
+				tailDirection = 'down';
+			}
+			if (!tailDirection) {
+				console.log('isEating');
+			}
+			const result = [...tailPosition];
+			result[2] = 'tail';
+			result[3] = tailDirection;
+			return result;
+		}
+
+		function setDirection (newDirection) {	
+			if (isPaused) {
+				return;
+			}				
 			let allowedDirections;
 			switch (direction) {
 				case 'left':
@@ -361,7 +397,7 @@ const mamba_game = (function () {
 				wall.addWall(newWallArray);				
 				gold.setLifeSpan();
 				gold.startGoldDecay();
-				wallThreshold++;
+				setWallThreshold();
 				setTimeout(function () {
 					gold.addGold();
 				});
@@ -406,6 +442,7 @@ const mamba_game = (function () {
 			advance: advance,
 			setDirection: setDirection,
 			checkCollision: checkCollision,
+			getTail: getTail,
 			retreat: retreat,
 			positions: positions,
 			setWallThreshold: setWallThreshold
@@ -722,14 +759,21 @@ const mamba_game = (function () {
 		})
 
 		// Clear and draw the second mamba position: the start of the body
-
-		positionsToDraw.push(allCurrentPositions[1]);
 		positionsToClear.push(allCurrentPositions[1]);
+		positionsToDraw.push(allCurrentPositions[1]);
 
+		// Clear and draw the last mamba position: the tail
+		positionsToClear.push(mamba.getTail());
+		positionsToDraw.push(mamba.getTail());
+		console.log(mamba.getTail());
+
+		// Add the tail
 		positionsToClear.forEach(function (position) {
 			drawOps++;
 			ctx.clearRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);				
 		});
+
+		
 
 		ctx.save();
 
@@ -737,6 +781,37 @@ const mamba_game = (function () {
 
 		positionsToDraw.forEach(function (position) {
 			switch(position[2]) {
+				case 'tail': 
+					{
+						switch(position[3]) {
+							case 'up':
+								{
+									ctx.drawImage(tailUpSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+								}
+								break;
+							case 'down':
+								{
+									ctx.drawImage(tailDownSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+								}
+								break;
+							case 'left':
+								{
+									ctx.drawImage(tailLeftSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+								}
+								break;
+							case 'right':
+								{
+									ctx.drawImage(tailRightSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+								}
+								break;
+							default: 
+								{
+									ctx.drawImage(bodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+								}
+								break;
+						}
+					}
+					break;
 				case 'mamba':
 					{
 						drawOps++;
