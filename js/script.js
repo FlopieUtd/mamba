@@ -286,9 +286,6 @@ const mamba_game = (function () {
 			if (tailPosition[1] < preTailPosition[1]) {
 				tailDirection = 'down';
 			}
-			if (!tailDirection) {
-				console.log('isEating');
-			}
 			const result = [...tailPosition];
 			result[2] = 'tail';
 			result[3] = tailDirection;
@@ -765,15 +762,12 @@ const mamba_game = (function () {
 		// Clear and draw the last mamba position: the tail
 		positionsToClear.push(mamba.getTail());
 		positionsToDraw.push(mamba.getTail());
-		console.log(mamba.getTail());
 
 		// Add the tail
 		positionsToClear.forEach(function (position) {
 			drawOps++;
 			ctx.clearRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);				
 		});
-
-		
 
 		ctx.save();
 
