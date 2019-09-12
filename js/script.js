@@ -35,6 +35,14 @@ const mamba_game = (function () {
 	tailLeftSVG.src = "images/tail-left.svg";	
 	const tailRightSVG = new Image(blockSize, blockSize);
 	tailRightSVG.src = "images/tail-right.svg";	
+	const whiteTailDownSVG = new Image(blockSize, blockSize);
+	whiteTailDownSVG.src = "images/tail-down-white.svg";	
+	const whiteTailUpSVG = new Image(blockSize, blockSize);
+	whiteTailUpSVG.src = "images/tail-up-white.svg";	
+	const whiteTailLeftSVG = new Image(blockSize, blockSize);
+	whiteTailLeftSVG.src = "images/tail-left-white.svg";	
+	const whiteTailRightSVG = new Image(blockSize, blockSize);
+	whiteTailRightSVG.src = "images/tail-right-white.svg";	
 
 	// Menu elements					
 	
@@ -101,6 +109,9 @@ const mamba_game = (function () {
 		},0)
 	}
 
+	// Tail direction
+
+	let tailDirection;
 
 	
 	const silverAudio = new Audio('./silver.wav');
@@ -265,7 +276,6 @@ const mamba_game = (function () {
 		let direction = 'right';									
 		let nextDirection = direction;
 		let wallThreshold;
-		let tailDirection;
 
 		function setWallThreshold () {
 			wallThreshold = random(16, 36);
@@ -494,7 +504,7 @@ const mamba_game = (function () {
 		}
 
 		function addBronze () {
-			if (bronzePositions.length < 64) {
+			if (bronzePositions.length < 50) {
 				bronzeCallsLeft--;
 				let randomPosition = getRandomPosition();
 				let mambaPositions = mamba.positions;
@@ -765,7 +775,6 @@ const mamba_game = (function () {
 
 		// Add the tail
 		positionsToClear.forEach(function (position) {
-			drawOps++;
 			ctx.clearRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);				
 		});
 
@@ -808,7 +817,7 @@ const mamba_game = (function () {
 					break;
 				case 'mamba':
 					{
-						drawOps++;
+						
 						if (isHead) {
 							ctx.drawImage(headSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 							isHead = false;
@@ -819,26 +828,22 @@ const mamba_game = (function () {
 					break;
 				case 'bronze':
 					{
-						drawOps++;
 						ctx.drawImage(bronzeSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
 					break;
 				case 'silver':
 					{
-						drawOps++;
 						ctx.drawImage(silverSVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
 					break;
 				case 'gold':
 					{
-						drawOps++;
 						ctx.fillStyle = '#55ff55';
 						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
 					break;
 				case 'wall':
 					{
-						drawOps++;
 						ctx.fillStyle = '#aa5858';
 						ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 					}
@@ -1010,7 +1015,6 @@ const mamba_game = (function () {
 			ctx.save();
 				ctx.fillStyle = color;
 				positions.forEach(function (position) {
-					drawOps++;
 					ctx.fillRect(position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
 				});
 			ctx.restore();			
@@ -1020,8 +1024,7 @@ const mamba_game = (function () {
 
 			// Draw a wall block in case the collision was with a wall. Otherwise, mambaBody is drawn anyway.
 
-			if (times == 3) {
-				drawOps++;
+			if (times === 3) {
 				ctx.fillStyle = '#aa5858';
 				ctx.fillRect(collisionPosition[0] * blockSize, collisionPosition[1] * blockSize, blockSize, blockSize);				
 			}
@@ -1044,25 +1047,41 @@ const mamba_game = (function () {
 		}
 
 		function drawBody (ctx, color) {
-			body.forEach(function (position) {
-				drawOps++;
-				if (color == 'white') {
-					drawOps++;
-					ctx.drawImage(whiteBodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+			body.forEach(function (position, index) {
+				if (index === body.length - 1) {
+					console.log('tail');
+					const tailSvgs = {
+						up: tailUpSVG,
+						down: tailDownSVG,
+						left: tailLeftSVG,
+						right: tailRightSVG
+					}
+					const whiteTailSvgs = {
+						up: whiteTailUpSVG,
+						down: whiteTailDownSVG,
+						left: whiteTailLeftSVG,
+						right: whiteTailRightSVG
+					}
+					if (color == 'white') {
+						ctx.drawImage(whiteTailSvgs[tailDirection], position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					} else {
+						ctx.drawImage(tailSvgs[tailDirection], position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
 				} else {
-					drawOps++;
-					ctx.drawImage(bodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					if (color == 'white') {
+						ctx.drawImage(whiteBodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					} else {
+						ctx.drawImage(bodySVG, position[0] * blockSize, position[1] * blockSize, blockSize, blockSize);
+					}
 				}
 			});			
 		}
 
 		function drawHead (ctx, color) {
-			drawOps++;
+			
 			if (color == 'white') {
-				drawOps++;
 				ctx.drawImage(whiteHeadSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);			
 			} else {
-				drawOps++;
 				ctx.drawImage(headSVG, head[0] * blockSize, head[1] * blockSize, blockSize, blockSize);	
 			}
 		}		
