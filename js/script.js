@@ -215,10 +215,16 @@ const mamba_game = (function () {
 
 	function bindEvents () {
 		const directionKeys = {
+			// Arrow Keys
 			37: 'left',
 			38: 'up',
 			39: 'right',
 			40: 'down'
+			
+			87: 'up', // w
+			65: 'left', // a
+			83: 'down', // s
+			68: 'right', // d
 		}
 		document.addEventListener('keydown', function (e) {
 			let key = e.which;
