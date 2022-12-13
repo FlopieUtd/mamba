@@ -1,135 +1,116 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-112891456-1"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
 
-      gtag("config", "UA-112891456-1");
-    </script>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112891456-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
 
-    <title>MAMBA</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-    <meta charset="UTF-8" />
-    <meta
-      name="description"
-      content="A HTML 5 Canvas and JavaScript reboot of the 1989 MS-DOS game Mamba by Bert Uffen. No need to download, play online!"
-    />
+    gtag("config", "UA-112891456-1");
+  </script>
+
+  <title>MAMBA</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+  <meta charset="UTF-8" />
+  <meta name="description"
+    content="A HTML 5 Canvas and JavaScript reboot of the 1989 MS-DOS game Mamba by Bert Uffen. No need to download, play online!" />
+    <meta name="keywords" content="mamba game spelletje play spel speel bert uffen ms-dos" />
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="header__left">
-          <span class="title yellow-text">MAMBA</span>
-          <div class="toggle-sound js-toggle-sound">
-            <img
-              src="./images/sound-on.svg"
-              alt="Toggle sound"
-              class="toggle-sound__on"
-            />
-            <img
-              src="./images/sound-off.svg"
-              alt="Toggle sound"
-              class="toggle-sound__off"
-            />
-          </div>
-        </div>
-        <div class="legend">
-          <div class="legend__bronze-value">
-            <img class="bronze-img" src="images/bronze-white.svg" />
-            <span class="equals white-text">=</span>
-            <span class="value bronze-value yellow-text">1</span>
-          </div>
-          <div class="legend__silver-value">
-            <img class="silver-img" src="images/silver-white.svg" />
-            <span class="equals white-text">=</span>
-            <span class="value silver-value yellow-text">10</span>
-          </div>
-          <div class="legend__score-container">
-            <span class="legend__score-label white-text">Score :</span>
-            <span class="legend__score yellow-text" id="score">0</span>
-          </div>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header__left">
+        <span class="title yellow-text">MAMBA</span>
+        <div class="toggle-sound js-toggle-sound">
+          <img src="./images/sound-on.svg" alt="Toggle sound" class="toggle-sound__on" />
+          <img src="./images/sound-off.svg" alt="Toggle sound" class="toggle-sound__off" />
         </div>
       </div>
-      <div class="highscore-submit">
-        <form class="highscore-submit__form">
-          Naam:
-          <input type="text" class="highscore-submit__input" maxlength="10" />
-        </form>
+      <div class="legend">
+        <div class="legend__bronze-value">
+          <img class="bronze-img" src="images/bronze-white.svg" />
+          <span class="equals white-text">=</span>
+          <span class="value bronze-value yellow-text">1</span>
+        </div>
+        <div class="legend__silver-value">
+          <img class="silver-img" src="images/silver-white.svg" />
+          <span class="equals white-text">=</span>
+          <span class="value silver-value yellow-text">10</span>
+        </div>
+        <div class="legend__score-container">
+          <span class="legend__score-label white-text">Score :</span>
+          <span class="legend__score yellow-text" id="score">0</span>
+        </div>
       </div>
-      <div class="highscores-wrapper">
-        <div class="highscores">
-          <div class="local-highscores">
-            <div class="highscore-header">
-              <div class="topscore-container">
-                <span class="highscore-label">Local Highscores</span>
-                <div class="topscore-holder">
-                  <div class="highscore highscore-local topscore">
-                    <span
-                      ><span class="place">1.</span
-                      ><span class="name"></span></span
-                    ><span class="score"></span>
-                  </div>
+    </div>
+    <div class="highscore-submit">
+      <form class="highscore-submit__form">
+        Naam:
+        <input type="text" class="highscore-submit__input" maxlength="10" />
+      </form>
+    </div>
+    <div class="highscores-wrapper">
+      <div class="highscores">
+        <div class="local-highscores">
+          <div class="highscore-header">
+            <div class="topscore-container">
+              <span class="highscore-label">Local Highscores</span>
+              <div class="topscore-holder">
+                <div class="highscore highscore-local topscore">
+                  <span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
                 </div>
               </div>
             </div>
-            <div class="body">
-              <div class="column"></div>
-              <div class="column"></div>
-              <div class="column"></div>
-            </div>
-            <div class="footer-line">&lt;Space&gt; = Global Highscores</div>
-            <div class="footer-line">&lt;Enter&gt; = Continue</div>
           </div>
-          <div class="global-highscores">
-            <div class="highscore-header">
-              <div class="topscore-container">
-                <span class="highscore-label">Global Highscores</span>
-                <div class="topscore-holder">
-                  <div class="highscore highscore-local topscore">
-                    <span
-                      ><span class="place">1.</span
-                      ><span class="name"></span></span
-                    ><span class="score"></span>
-                  </div>
+          <div class="body">
+            <div class="column"></div>
+            <div class="column"></div>
+            <div class="column"></div>
+          </div>
+          <div class="footer-line">&lt;Space&gt; = Global Highscores</div>
+          <div class="footer-line">&lt;Enter&gt; = Continue</div>
+        </div>
+        <div class="global-highscores">
+          <div class="highscore-header">
+            <div class="topscore-container">
+              <span class="highscore-label">Global Highscores</span>
+              <div class="topscore-holder">
+                <div class="highscore highscore-local topscore">
+                  <span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
                 </div>
               </div>
             </div>
-            <div class="body">
-              <div class="column"></div>
-              <div class="column"></div>
-              <div class="column"></div>
-            </div>
-            <div
-              class="footer-line old-highscores"
-              onclick="alert('On september 8th, 2019 the game was updated. Changes include a slightly sped up game, walls are created at a random length and input control is disabled while the game is paused. All these changes are more in line with the original game. Along with these changes, the highscores were reset because the game should be a little bit harder now. The old highscores can be found at https://github.com/FlopieUtd/mamba/blob/master/old-highscores.json Enjoy!');"
-            >
-              What happened to the old highscores?
-            </div>
-            <br />
-            <div class="footer-line">&lt;Space&gt; = Local Highscores</div>
-            <div class="footer-line">&lt;Enter&gt; = Continue</div>
           </div>
+          <div class="body">
+            <div class="column"></div>
+            <div class="column"></div>
+            <div class="column"></div>
+          </div>
+          <div class="footer-line">&lt;Space&gt; = Local Highscores</div>
+          <div class="footer-line">&lt;Enter&gt; = Continue</div>
         </div>
       </div>
-      <canvas class="canvas"></canvas>
-      <p class="credits">Original game by Bert Uffen, 1989</p>
     </div>
-    <div class="js-loading-screen loading-screen">
-      <h1>MAMBA</h1>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
-    <script src="js/script.js"></script>
-  </body>
+    <canvas class="canvas"></canvas>
+    <p class="credits">Original game by Bert Uffen, 1989</p>
+  </div>
+  <p class="author">
+    <a href="https://www.solidesoftware.nl">Created by Floris de Haan</a>
+  </p>
+  <div class="js-loading-screen loading-screen">
+    <h1>MAMBA</h1>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
+  <script src="js/script.js"></script>
+</body>
+
 </html>

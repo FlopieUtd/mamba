@@ -21,13 +21,13 @@ body {
   font-family: "perfect dos vga", monospace;
   background: black;
   font-weight: 700;
-  user-select: none;
   cursor: default;
   overflow: hidden;
 }
 
 .container {
   position: relative;
+  user-select: none;
 }
 
 .canvas {
@@ -271,8 +271,15 @@ body {
 
 .credits {
   font-family: Courier;
-  color: rgba(255, 255, 255, 0.3);
   text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.author {
+  font-family: Courier;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
 }
 
 .old-highscores:hover {
