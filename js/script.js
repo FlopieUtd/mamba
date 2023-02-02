@@ -128,7 +128,7 @@ const mamba_game = (function () {
   bronzeAudio.preload = "auto";
   gameOverAudio.preload = "auto";
 
-  goldAudio().load();
+  goldAudio.load();
   silverAudio.load();
   bronzeAudio.load();
   gameOverAudio.load();
