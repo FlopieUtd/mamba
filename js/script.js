@@ -145,6 +145,7 @@ const mamba_game = (function () {
         goldAudioInstance = goldAudio.cloneNode();
         goldAudioInstance.play();
       } else if (type == "gameOver") {
+		console.log('gameover')
         gameOverAudioInstance = gameOverAudio.cloneNode();
         gameOverAudioInstance.play();
       }
@@ -410,7 +411,7 @@ const mamba_game = (function () {
             gold.removeGold();
             const goldWorth = random(1, 5) * 10;
             score.increaseScore(goldWorth);
-            playSound("silver");
+            playSound("gold");
           }
         }
       }
@@ -1146,6 +1147,7 @@ const mamba_game = (function () {
       // Draw a wall block in case the collision was with a wall. Otherwise, mambaBody is drawn anyway.
 
       if (times === 3) {
+		playSound("gameOver");
         ctx.fillStyle = "#aa5858";
         ctx.fillRect(
           collisionPosition[0] * blockSize,
@@ -1159,7 +1161,6 @@ const mamba_game = (function () {
         drawBackground(ctx, "#0000aa");
         drawBody(ctx, "white");
         drawHead(ctx, "white");
-        playSound("gameOver");
         setTimeout(function () {
           drawBackground(ctx, "black");
           drawBody(ctx, "yellow");
