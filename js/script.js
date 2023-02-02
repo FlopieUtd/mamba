@@ -123,10 +123,12 @@ const mamba_game = (function () {
   const bronzeAudio = new Audio("./sounds/bronze.mp3");
   const gameOverAudio = new Audio("./sounds/game-over.mp3");
 
+  goldAudio.preload = "auto";
   silverAudio.preload = "auto";
   bronzeAudio.preload = "auto";
   gameOverAudio.preload = "auto";
 
+  goldAudio().load();
   silverAudio.load();
   bronzeAudio.load();
   gameOverAudio.load();
