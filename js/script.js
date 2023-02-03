@@ -42,6 +42,8 @@ const mamba_game = (function () {
   whiteTailLeftSVG.src = "images/tail-left-white.svg";
   const whiteTailRightSVG = new Image(blockSize, blockSize);
   whiteTailRightSVG.src = "images/tail-right-white.svg";
+  const wallSVG = new Image(blockSize, blockSize);
+  wallSVG.src = "images/wall.svg";
 
   // Menu elements
 
@@ -118,24 +120,33 @@ const mamba_game = (function () {
 
   let tailDirection;
 
+  const movementAudio = new Audio("./sounds/movement.mp3");
   const goldAudio = new Audio("./sounds/gold.mp3");
   const silverAudio = new Audio("./sounds/silver.mp3");
   const bronzeAudio = new Audio("./sounds/bronze.mp3");
   const gameOverAudio = new Audio("./sounds/game-over.mp3");
 
+  movementAudio.preload = "auto";
   goldAudio.preload = "auto";
   silverAudio.preload = "auto";
   bronzeAudio.preload = "auto";
   gameOverAudio.preload = "auto";
 
+  movementAudio.load();
   goldAudio.load();
   silverAudio.load();
   bronzeAudio.load();
   gameOverAudio.load();
 
+  movementAudioInstance = movementAudio.cloneNode();
+  movementAudioInstance.loop = true;
+  movementAudioInstance.volume = 0.2;
+
   function playSound(type) {
     if (sound) {
-      if (type == "bronze") {
+      if (type === "movement") {
+        movementAudioInstance.play();
+      } else if (type == "bronze") {
         bronzeAudioInstance = bronzeAudio.cloneNode();
         bronzeAudioInstance.play();
       } else if (type == "silver") {
@@ -145,7 +156,6 @@ const mamba_game = (function () {
         goldAudioInstance = goldAudio.cloneNode();
         goldAudioInstance.play();
       } else if (type == "gameOver") {
-		console.log('gameover')
         gameOverAudioInstance = gameOverAudio.cloneNode();
         gameOverAudioInstance.play();
       }
@@ -248,9 +258,12 @@ const mamba_game = (function () {
       if (key == 80) {
         if (isPaused == false) {
           isPaused = true;
+          console.log("pause movement audio");
+          movementAudioInstance.pause();
         } else if (!isGameOver) {
           isPaused = false;
           gameLoop();
+          playSound("movement");
         }
       }
     });
@@ -265,6 +278,7 @@ const mamba_game = (function () {
     getLocalHighscores();
     processLocalHighscore(highscoreString);
     gameLoop();
+    playSound("movement");
   }
 
   function gameLoop() {
@@ -945,8 +959,8 @@ const mamba_game = (function () {
           break;
         case "wall":
           {
-            ctx.fillStyle = "#aa5858";
-            ctx.fillRect(
+            ctx.drawImage(
+              wallSVG,
               position[0] * blockSize,
               position[1] * blockSize,
               blockSize,
@@ -1147,9 +1161,10 @@ const mamba_game = (function () {
       // Draw a wall block in case the collision was with a wall. Otherwise, mambaBody is drawn anyway.
 
       if (times === 3) {
-		playSound("gameOver");
-        ctx.fillStyle = "#aa5858";
-        ctx.fillRect(
+        movementAudioInstance.pause();
+        playSound("gameOver");
+        ctx.drawImage(
+          wallSVG,
           collisionPosition[0] * blockSize,
           collisionPosition[1] * blockSize,
           blockSize,
@@ -1176,7 +1191,6 @@ const mamba_game = (function () {
     function drawBody(ctx, color) {
       body.forEach(function (position, index) {
         if (index === body.length - 1) {
-          console.log("tail");
           const tailSvgs = {
             up: tailUpSVG,
             down: tailDownSVG,
@@ -1280,12 +1294,20 @@ document.querySelector(".toggle-sound").addEventListener("click", function (e) {
     window.localStorage.setItem("sound", 1);
     buttonClasslist.remove("toggle-sound--off");
     buttonClasslist.add("toggle-sound--on");
+    if (!isPaused) {
+      movementAudioInstance.play();
+    }
   }
 });
 
-setTimeout(function () {
-  mamba_game.init();
-}, 1000);
+let isGameStarted = false;
+
+document.addEventListener("keypress", () => {
+  if (!isGameStarted) {
+    isGameStarted = true;
+    mamba_game.init();
+  }
+});
 
 function fadeOut(element) {
   element.style.opacity = 1;

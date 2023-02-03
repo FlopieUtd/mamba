@@ -57,6 +57,11 @@ body {
   margin-right: 1rem;
 }
 
+.header-credits {
+  color: white;
+  margin-left: 1rem;
+}
+
 .toggle-sound {
   display: flex;
   align-items: center;
@@ -143,11 +148,17 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 2;
+  flex-direction:column;
 }
 
 .loading-screen h1 {
   color: #ffff55;
   font-size: 20vw;
+}
+
+.start-instructions {
+  color: #eee;
+  font-size: 2vw;
 }
 
 .loading-screen.hidden {
@@ -270,13 +281,11 @@ body {
 }
 
 .credits {
-  font-family: Courier;
   text-align: center;
   color: rgba(255, 255, 255, 0.3);
 }
 
 .author {
-  font-family: Courier;
   text-align: center;
   cursor: pointer;
   position: relative;
