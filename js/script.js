@@ -258,7 +258,6 @@ const mamba_game = (function () {
       if (key == 80) {
         if (isPaused == false) {
           isPaused = true;
-          console.log("pause movement audio");
           movementAudioInstance.pause();
         } else if (!isGameOver) {
           isPaused = false;
@@ -969,8 +968,8 @@ const mamba_game = (function () {
           }
           break;
         default: {
-          console.error("Woopsie daisy!");
-        }
+			// Should not happen
+		}
       }
     });
 
@@ -1302,7 +1301,7 @@ document.querySelector(".toggle-sound").addEventListener("click", function (e) {
 
 let isGameStarted = false;
 
-document.addEventListener("keypress", () => {
+document.addEventListener("keydown", () => {
   if (!isGameStarted) {
     isGameStarted = true;
     mamba_game.init();
