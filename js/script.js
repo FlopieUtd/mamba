@@ -51,7 +51,7 @@ const mamba_game = (function () {
   const bronzeValueElement = document.querySelector(".bronze-value");
   const silverValueElement = document.querySelector(".silver-value");
 
-  // Game settings
+  // Engine settings
 
   const frameLength = 96;
   let currentFrame = 0;
@@ -59,9 +59,16 @@ const mamba_game = (function () {
   let isGameOver = false;
   let bronzeCallsLeft = 4;
   let goldCallsLeft = 12;
-  let minWallLifespan = 1;
-  let maxWallLifespan = 220;
+
+  // Game settings
+
+  const minWallLifespan = 1;
+  const maxWallLifespan = 235;
   const maxAmountOfBronze = 50;
+  const minBronzeLifespan = 50;
+  const maxBronzeLifespan = 100
+  const minGoldLifespanInTicks = 40;
+  const maxGoldLifespanInTicks = 80;
 
   // Drawing variables
 
@@ -504,10 +511,10 @@ const mamba_game = (function () {
   const bronze = (function () {
     let amount = random(8, 12);
     let bronzePositions = [];
-    let removeIn = random(50, 100);
+    let removeIn = random(minBronzeLifespan, maxBronzeLifespan);
 
     function setRemoveIn() {
-      removeIn = random(50, 100);
+      removeIn = random(minBronzeLifespan, maxBronzeLifespan);
     }
 
     for (i = 0; i < amount; i++) {
@@ -626,7 +633,7 @@ const mamba_game = (function () {
         !checkCoordinateInArray(randomPosition, silverPositions)
       ) {
         goldPosition = randomPosition;
-        lifeSpan = random(4, 8) * 10;
+        lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks) ;
       } else {
         if (goldCallsLeft > 0) {
           addGold();
@@ -637,11 +644,10 @@ const mamba_game = (function () {
     }
 
     function setLifeSpan() {
-      lifeSpan = random(4, 8) * 10;
+      lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks) ;
     }
 
-    function startGoldDecay(time) {
-      let startFrame = currentFrame;
+    function startGoldDecay() {
       endFrame = currentFrame + lifeSpan;
     }
 
