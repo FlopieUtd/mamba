@@ -60,8 +60,8 @@ const mamba_game = (function () {
   let bronzeCallsLeft = 4;
   let goldCallsLeft = 12;
   let minWallLifespan = 1;
-  let maxWallLifespan = 180;
-  const maxAmountOfBronze = 60;
+  let maxWallLifespan = 220;
+  const maxAmountOfBronze = 50;
 
   // Drawing variables
 
