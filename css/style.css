@@ -203,7 +203,7 @@ body {
   transform: translate(-50%, -50%);
   padding: 4px;
   background: lightgray;
-  z-index: 1;
+  z-index: 2;
 }
 
 .highscore-submit__form {
