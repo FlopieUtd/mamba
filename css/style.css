@@ -42,19 +42,19 @@ body {
 }
 
 .canvas-border:after {
-  content: '';
+  content: "";
   position: absolute;
   left: 12px;
   top: 12px;
   width: calc(100% - 30px);
   height: calc(100% - 32px);
   border: 2px solid #fff;
-  border-left-width: 3px; 
+  border-left-width: 3px;
   border-right-width: 3px;
 }
 
 .canvas-border:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 18px;
   top: 15px;
@@ -64,7 +64,6 @@ body {
   border-left-width: 3px;
   border-right-width: 3px;
 }
-
 
 /* Header */
 
@@ -177,7 +176,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 2;
-  flex-direction:column;
+  flex-direction: column;
 }
 
 .loading-screen h1 {
@@ -264,19 +263,19 @@ body {
 }
 
 .highscores:after {
-  content: '';
+  content: "";
   position: absolute;
   left: 5px;
   top: 8px;
   width: calc(100% - 16px);
   height: calc(100% - 22px);
   border: 2px solid #0000aa;
-  border-left-width: 3px; 
+  border-left-width: 3px;
   border-right-width: 3px;
 }
 
 .highscores:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 11px;
   top: 11px;
@@ -334,15 +333,14 @@ body {
 }
 
 .footer {
+  width: 850px;
   display: flex;
   background: #aa0000;
   color: white;
   justify-content: space-between;
-  width: 58vw;
   padding: 0 1rem;
   z-index: 1;
 }
-
 
 .place {
   padding-right: 1rem;
@@ -435,5 +433,9 @@ body {
 
   .canvas {
     border: 2.4vw solid #0000aa;
+  }
+
+  .footer {
+    width: 58vw;
   }
 }
