@@ -63,7 +63,7 @@ const mamba_game = (function () {
   // Game settings
 
   const minWallLifespan = 1;
-  const maxWallLifespan = 235;
+  const maxWallLifespan = 220;
   const maxAmountOfBronze = 50;
   const minBronzeLifespan = 50;
   const maxBronzeLifespan = 100
