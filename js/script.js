@@ -69,6 +69,11 @@ const mamba_game = (function () {
   const maxBronzeLifespan = 100
   const minGoldLifespanInTicks = 40;
   const maxGoldLifespanInTicks = 80;
+  const minWallLength = 16;
+  const maxWallLength = 36;
+  const minStartingBronze = 6;
+  const maxStartingBronze = 12;
+
 
   // Drawing variables
 
@@ -323,7 +328,7 @@ const mamba_game = (function () {
     let wallThreshold;
 
     function setWallThreshold() {
-      wallThreshold = random(16, 36);
+      wallThreshold = random(minWallLength, maxWallLength);
     }
 
     function getTail() {
@@ -509,7 +514,7 @@ const mamba_game = (function () {
   })();
 
   const bronze = (function () {
-    let amount = random(8, 12);
+    let amount = random(minStartingBronze, maxStartingBronze);
     let bronzePositions = [];
     let removeIn = random(minBronzeLifespan, maxBronzeLifespan);
 

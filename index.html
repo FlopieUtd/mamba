@@ -1,120 +1,153 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-112891456-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112891456-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+      gtag("config", "UA-112891456-1");
+    </script>
 
-    gtag("config", "UA-112891456-1");
-  </script>
-
-  <title>MAMBA</title>
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-  <meta charset="UTF-8" />
-  <meta name="description"
-    content="A HTML 5 Canvas and JavaScript reboot of the 1989 MS-DOS game Mamba by Bert Uffen. No need to download, play online!" />
-    <meta name="keywords" content="mamba game spelletje play spel speel bert uffen ms-dos" />
+    <title>MAMBA</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="A HTML 5 Canvas and JavaScript reboot of the 1989 MS-DOS game Mamba by Bert Uffen. No need to download, play online!"
+    />
+    <meta
+      name="keywords"
+      content="mamba game spelletje play spel speel bert uffen ms-dos"
+    />
   </head>
 
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="header__left">
-        <span class="title yellow-text">MAMBA</span>
-        <div class="toggle-sound js-toggle-sound">
-          <img src="./images/sound-on.svg" alt="Toggle sound" class="toggle-sound__on" />
-          <img src="./images/sound-off.svg" alt="Toggle sound" class="toggle-sound__off" />
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header__left">
+          <span class="title yellow-text">MAMBA</span>
+          <div class="toggle-sound js-toggle-sound">
+            <img
+              src="./images/sound-on.svg"
+              alt="Toggle sound"
+              class="toggle-sound__on"
+            />
+            <img
+              src="./images/sound-off.svg"
+              alt="Toggle sound"
+              class="toggle-sound__off"
+            />
+          </div>
+          <div class="header-credits">(c) 1989, Bert Uffen, Amsterdam</div>
         </div>
-        <div class="header-credits">(c) 1989, Bert Uffen, Amsterdam</div>
+        <div class="legend">
+          <div class="legend__bronze-value">
+            <img class="bronze-img" src="images/bronze-white.svg" />
+            <span class="equals white-text">=</span>
+            <span class="value bronze-value yellow-text">1</span>
+          </div>
+          <div class="legend__silver-value">
+            <img class="silver-img" src="images/silver-white.svg" />
+            <span class="equals white-text">=</span>
+            <span class="value silver-value yellow-text">10</span>
+          </div>
+          <div class="legend__score-container">
+            <span class="legend__score-label white-text">Score :</span>
+            <span class="legend__score yellow-text" id="score">0</span>
+          </div>
+        </div>
       </div>
-      <div class="legend">
-        <div class="legend__bronze-value">
-          <img class="bronze-img" src="images/bronze-white.svg" />
-          <span class="equals white-text">=</span>
-          <span class="value bronze-value yellow-text">1</span>
-        </div>
-        <div class="legend__silver-value">
-          <img class="silver-img" src="images/silver-white.svg" />
-          <span class="equals white-text">=</span>
-          <span class="value silver-value yellow-text">10</span>
-        </div>
-        <div class="legend__score-container">
-          <span class="legend__score-label white-text">Score :</span>
-          <span class="legend__score yellow-text" id="score">0</span>
-        </div>
+      <div class="highscore-submit">
+        <form class="highscore-submit__form">
+          Naam:
+          <input type="text" class="highscore-submit__input" maxlength="10" />
+        </form>
       </div>
-    </div>
-    <div class="highscore-submit">
-      <form class="highscore-submit__form">
-        Naam:
-        <input type="text" class="highscore-submit__input" maxlength="10" />
-      </form>
-    </div>
-    <div class="highscores-wrapper">
-      <div class="highscores">
-        <div class="local-highscores">
-          <div class="highscore-header">
-            <div class="topscore-container">
-              <span class="highscore-label">Lokale Highscores</span>
-              <div class="topscore-holder">
-                <div class="highscore highscore-local topscore">
-                  <span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
+      <div class="highscores-wrapper">
+        <div class="highscores">
+          <div class="local-highscores">
+            <div class="highscore-header">
+              <div class="topscore-container">
+                <span class="highscore-label">Lokale Highscores</span>
+                <div class="topscore-holder">
+                  <div class="highscore highscore-local topscore">
+                    <span
+                      ><span class="place">1.</span
+                      ><span class="name"></span></span
+                    ><span class="score"></span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="body">
-            <div class="column"></div>
-            <div class="column"></div>
-            <div class="column"></div>
-          </div>
-          <div class="footer-line">&lt;Space&gt; = Globale Highscores</div>
-          <div class="footer-line">&lt;Enter&gt; = Doorgaan</div>
-        </div>
-        <div class="global-highscores">
-          <div class="highscore-header">
-            <div class="topscore-container">
-              <span class="highscore-label">Globale Highscores</span>
-              <div class="topscore-holder">
-                <div class="highscore highscore-local topscore">
-                  <span><span class="place">1.</span><span class="name"></span></span><span class="score"></span>
-                </div>
+            <div class="body">
+              <div class="column"></div>
+              <div class="column"></div>
+              <div class="column"></div>
+            </div>
+            <div class="footer-container">
+              <div class="footer">
+                <div>&lt;Space&gt; = Globale Highscores</div>
+                <div>&lt;Enter&gt; = Doorgaan</div>
               </div>
             </div>
           </div>
-          <div class="body">
-            <div class="column"></div>
-            <div class="column"></div>
-            <div class="column"></div>
+          <div class="global-highscores">
+            <div class="highscore-header">
+              <div class="topscore-container">
+                <span class="highscore-label">Globale Highscores</span>
+                <div class="topscore-holder">
+                  <div class="highscore highscore-local topscore">
+                    <span
+                      ><span class="place">1.</span
+                      ><span class="name"></span></span
+                    ><span class="score"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="column"></div>
+              <div class="column"></div>
+              <div class="column"></div>
+            </div>
+            <div class="footer-container">
+              <div class="footer">
+                <div>&lt;Space&gt; = Lokale Highscores</div>
+                <div>&lt;Enter&gt; = Doorgaan</div>
+              </div>
+            </div>
           </div>
-          <div class="footer-line">&lt;Space&gt; = Lokale Highscores</div>
-          <div class="footer-line">&lt;Enter&gt; = Doorgaan</div>
         </div>
       </div>
+      <div class="canvas-border">
+        <canvas class="canvas"></canvas>
+      </div>
+      <p class="credits">Original game by Bert Uffen</p>
     </div>
-    <canvas class="canvas"></canvas>
-    <p class="credits">Original game by Bert Uffen</p>
-  </div>
-  <p class="author">
-    <a href="https://www.solidesoftware.nl">Recreated by Floris de Haan</a>
-  </p>
-  <p class="credits">The highscores were reset on februari 6th 2023, after tweaking the game a little. Good luck!</p>
-  <p class="credits">Have any feedback? Mail me at info@solidesoftware.nl</p>
-  <div class="js-loading-screen loading-screen">
-    <h1>MAMBA</h1>
-    <div class="start-instructions">Druk op een toets om door te gaan</div>
-  </div>
-  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
-  <script src="js/script.js"></script>
-</body>
-
+    <p class="author">
+      <a href="https://www.solidesoftware.nl">Recreated by Floris de Haan</a>
+    </p>
+    <p class="credits">
+      The highscores were reset on februari 6th 2023, after tweaking the game a
+      little. Good luck!
+    </p>
+    <p class="credits">Have any feedback? Mail me at info@solidesoftware.nl</p>
+    <div class="js-loading-screen loading-screen">
+      <h1>MAMBA</h1>
+      <div class="start-instructions">Druk op een toets om door te gaan</div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
+    <script src="js/script.js"></script>
+  </body>
 </html>
