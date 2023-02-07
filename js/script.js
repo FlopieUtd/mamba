@@ -154,7 +154,7 @@ const mamba_game = (function () {
 
   movementAudioInstance = movementAudio.cloneNode();
   movementAudioInstance.loop = true;
-  movementAudioInstance.volume = 0.2;
+  movementAudioInstance.volume = 0.15;
 
   function playSound(type) {
     if (sound) {
@@ -162,15 +162,19 @@ const mamba_game = (function () {
         movementAudioInstance.play();
       } else if (type == "bronze") {
         bronzeAudioInstance = bronzeAudio.cloneNode();
+        bronzeAudioInstance.volume = 0.5;
         bronzeAudioInstance.play();
       } else if (type == "silver") {
         silverAudioInstance = silverAudio.cloneNode();
+        silverAudioInstance.volume = 0.5;
         silverAudioInstance.play();
       } else if (type == "gold") {
         goldAudioInstance = goldAudio.cloneNode();
+        goldAudioInstance.volume = 0.5;
         goldAudioInstance.play();
       } else if (type == "gameOver") {
         gameOverAudioInstance = gameOverAudio.cloneNode();
+        gameOverAudioInstance.volume = 0.5;
         gameOverAudioInstance.play();
       }
     }
