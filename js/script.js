@@ -1,3 +1,16 @@
+const movementAudio = new Howl({
+  src: "./sounds/movement.mp3",
+  volume: 0.2,
+  loop: true,
+});
+const goldAudio = new Howl({ src: "./sounds/gold.mp3", volume: 0.5 });
+const silverAudio = new Howl({ src: "./sounds/silver.mp3", volume: 0.5 });
+const bronzeAudio = new Howl({ src: "./sounds/bronze.mp3", volume: 0.5 });
+const gameOverAudio = new Howl({
+  src: "./sounds/game-over.mp3",
+  volume: 0.5,
+});
+
 const mamba_game = (function () {
   // Canvas
 
@@ -66,14 +79,13 @@ const mamba_game = (function () {
   const maxWallLifespan = 220;
   const maxAmountOfBronze = 50;
   const minBronzeLifespan = 50;
-  const maxBronzeLifespan = 100
+  const maxBronzeLifespan = 100;
   const minGoldLifespanInTicks = 40;
   const maxGoldLifespanInTicks = 80;
   const minWallLength = 16;
   const maxWallLength = 36;
   const minStartingBronze = 6;
   const maxStartingBronze = 12;
-
 
   // Drawing variables
 
@@ -134,48 +146,18 @@ const mamba_game = (function () {
 
   let tailDirection;
 
-  const movementAudio = new Audio("./sounds/movement.mp3");
-  const goldAudio = new Audio("./sounds/gold.mp3");
-  const silverAudio = new Audio("./sounds/silver.mp3");
-  const bronzeAudio = new Audio("./sounds/bronze.mp3");
-  const gameOverAudio = new Audio("./sounds/game-over.mp3");
-
-  movementAudio.preload = "auto";
-  goldAudio.preload = "auto";
-  silverAudio.preload = "auto";
-  bronzeAudio.preload = "auto";
-  gameOverAudio.preload = "auto";
-
-  movementAudio.load();
-  goldAudio.load();
-  silverAudio.load();
-  bronzeAudio.load();
-  gameOverAudio.load();
-
-  movementAudioInstance = movementAudio.cloneNode();
-  movementAudioInstance.loop = true;
-  movementAudioInstance.volume = 0.15;
-
   function playSound(type) {
     if (sound) {
       if (type === "movement") {
-        movementAudioInstance.play();
+        movementAudio.play();
       } else if (type == "bronze") {
-        bronzeAudioInstance = bronzeAudio.cloneNode();
-        bronzeAudioInstance.volume = 0.5;
-        bronzeAudioInstance.play();
+        bronzeAudio.play();
       } else if (type == "silver") {
-        silverAudioInstance = silverAudio.cloneNode();
-        silverAudioInstance.volume = 0.5;
-        silverAudioInstance.play();
+        silverAudio.play();
       } else if (type == "gold") {
-        goldAudioInstance = goldAudio.cloneNode();
-        goldAudioInstance.volume = 0.5;
-        goldAudioInstance.play();
+        goldAudio.play();
       } else if (type == "gameOver") {
-        gameOverAudioInstance = gameOverAudio.cloneNode();
-        gameOverAudioInstance.volume = 0.5;
-        gameOverAudioInstance.play();
+        gameOverAudio.play();
       }
     }
   }
@@ -272,11 +254,11 @@ const mamba_game = (function () {
       if (key == 80) {
         if (isPaused == false) {
           isPaused = true;
-          movementAudioInstance.pause();
+          movementAudio.pause();
         } else if (!isGameOver) {
           isPaused = false;
           gameLoop();
-          playSound("movement");
+          playSound('movement');
         }
       }
     });
@@ -642,7 +624,7 @@ const mamba_game = (function () {
         !checkCoordinateInArray(randomPosition, silverPositions)
       ) {
         goldPosition = randomPosition;
-        lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks) ;
+        lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks);
       } else {
         if (goldCallsLeft > 0) {
           addGold();
@@ -653,7 +635,7 @@ const mamba_game = (function () {
     }
 
     function setLifeSpan() {
-      lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks) ;
+      lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks);
     }
 
     function startGoldDecay() {
@@ -981,8 +963,8 @@ const mamba_game = (function () {
           }
           break;
         default: {
-			// Should not happen
-		}
+          // Should not happen
+        }
       }
     });
 
@@ -1173,7 +1155,7 @@ const mamba_game = (function () {
       // Draw a wall block in case the collision was with a wall. Otherwise, mambaBody is drawn anyway.
 
       if (times === 3) {
-        movementAudioInstance.pause();
+        movementAudio.pause();
         playSound("gameOver");
         ctx.drawImage(
           wallSVG,
@@ -1301,14 +1283,13 @@ document.querySelector(".toggle-sound").addEventListener("click", function (e) {
     window.localStorage.setItem("sound", 0);
     buttonClasslist.remove("toggle-sound--on");
     buttonClasslist.add("toggle-sound--off");
+    movementAudio.pause();
   } else {
     window.sound = 1;
     window.localStorage.setItem("sound", 1);
     buttonClasslist.remove("toggle-sound--off");
     buttonClasslist.add("toggle-sound--on");
-    if (!isPaused) {
-      movementAudioInstance.play();
-    }
+    movementAudio.play();
   }
 });
 
@@ -1321,9 +1302,10 @@ document.addEventListener("keydown", () => {
   }
 });
 
-const caret = document.querySelector('.caret');
+const caret = document.querySelector(".caret");
 
-document.querySelector('.highscore-submit__input').addEventListener('input', (e) => {
-  console.log(e.target.value.length)
-  caret.style.transform = `translateX(${16 * e.target.value.length}px)`;
-})
+document
+  .querySelector(".highscore-submit__input")
+  .addEventListener("input", (e) => {
+    caret.style.transform = `translateX(${16 * e.target.value.length}px)`;
+  });
