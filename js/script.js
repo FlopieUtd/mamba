@@ -57,8 +57,8 @@ const mamba_game = (function () {
   let currentFrame = 0;
   let isPaused = false;
   let isGameOver = false;
-  let bronzeCallsLeft = 4;
-  let goldCallsLeft = 12;
+  let bronzeCallsLeft = 8;
+  let goldCallsLeft = 20;
 
   // Game settings
 
@@ -285,7 +285,7 @@ const mamba_game = (function () {
   // Start game
 
   function init() {
-    fadeOut(loadingScreen);
+    loadingScreen.style.zIndex = -1;
     bindEvents();
     mamba.setWallThreshold();
     getLocalHighscores();
@@ -1321,20 +1321,9 @@ document.addEventListener("keydown", () => {
   }
 });
 
-function fadeOut(element) {
-  element.style.opacity = 1;
+const caret = document.querySelector('.caret');
 
-  let last = +new Date();
-  const tick = function () {
-    element.style.opacity = +element.style.opacity - (new Date() - last) / 500;
-    last = +new Date();
-
-    if (element.style.opacity > 0) {
-      (window.requestAnimationFrame && requestAnimationFrame(tick)) ||
-        setTimeout(tick, 16);
-    } else {
-      element.style.zIndex = -1;
-    }
-  };
-  tick();
-}
+document.querySelector('.highscore-submit__input').addEventListener('input', (e) => {
+  console.log(e.target.value.length)
+  caret.style.transform = `translateX(${16 * e.target.value.length}px)`;
+})

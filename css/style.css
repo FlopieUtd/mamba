@@ -209,19 +209,44 @@ body {
 .highscore-submit__form {
   background: #aaaaaa;
   font-size: 1.8rem;
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
   border: 8px double black;
 }
 
 .highscore-submit__input {
   font-size: 1.8rem;
   font-family: "perfect dos vga";
-  width: 11rem;
+  width: 162px;
   background: #00aa00;
   outline: none;
   border: none;
   cursor: default;
   caret-color: #00aa00;
+  position: relative;
+}
+
+.highscore-submit__input:focus + .caret {
+  display: block;
+}
+
+.caret {
+  display: none;
+  height: 3px;
+  width: 15px;
+  background: black;
+  display: none;
+  position: absolute;
+  top: 45px;
+  left: 125px;
+  animation: blinker .1s alternate infinite;
+  opacity: 1;
+}
+
+@keyframes blinker {
+  0% { opacity: 1; }
+  49% { opacity: 1; }
+  50% { opacity: 0; }
+ 100% { opacity: 0; }
 }
 
 /* Highscore screens */
