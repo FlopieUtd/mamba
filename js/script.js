@@ -11,9 +11,22 @@ const gameOverAudio = new Howl({
   volume: 0.5,
 });
 
+const FRAME_LENGTH = 96;
+const MIN_WALL_LIFESPAN = 1;
+const MAX_WALL_LIFESPAN = 220;
+const MAX_AMOUNT_OF_BRONZE = 50;
+const MIN_BRONZE_LIFESPAN = 50;
+const MAX_BRONZE_LIFESPAN = 100;
+const MIN_GOLD_LIFESPAN_IN_TICKS = 40;
+const MAX_GOLD_LIFESPAN_IN_TICKS = 80;
+const MIN_WALL_LENGTH = 16;
+const MAX_WALL_LENGTH = 36;
+const MIN_STARTING_BRONZE = 6;
+const MAX_STARTING_BRONZE = 12;
+const RANDOM_POSITION_ATTEMPTS = 12;
+
 const mamba_game = (function () {
   // Canvas
-
   const canvas = document.querySelector(".canvas");
   const ctx = canvas.getContext("2d");
   const blockSize = 32;
@@ -26,7 +39,6 @@ const mamba_game = (function () {
   const loadingScreen = document.querySelector(".js-loading-screen");
 
   // Canvas elements
-
   const bodySVG = new Image(blockSize, blockSize);
   bodySVG.src = "images/body.svg";
   const bronzeSVG = new Image(blockSize, blockSize);
@@ -59,33 +71,15 @@ const mamba_game = (function () {
   wallSVG.src = "images/wall.svg";
 
   // Menu elements
-
   const scoreElement = document.getElementById("score");
   const bronzeValueElement = document.querySelector(".bronze-value");
   const silverValueElement = document.querySelector(".silver-value");
 
   // Engine settings
-
-  const frameLength = 96;
   let currentFrame = 0;
   let isPaused = false;
   let isGameOver = false;
-  let bronzeCallsLeft = 8;
-  let goldCallsLeft = 20;
-
-  // Game settings
-
-  const minWallLifespan = 1;
-  const maxWallLifespan = 220;
-  const maxAmountOfBronze = 50;
-  const minBronzeLifespan = 50;
-  const maxBronzeLifespan = 100;
-  const minGoldLifespanInTicks = 40;
-  const maxGoldLifespanInTicks = 80;
-  const minWallLength = 16;
-  const maxWallLength = 36;
-  const minStartingBronze = 6;
-  const maxStartingBronze = 12;
+  let randomPositionAttemptsLeft = RANDOM_POSITION_ATTEMPTS;
 
   // Drawing variables
 
@@ -258,7 +252,7 @@ const mamba_game = (function () {
         } else if (!isGameOver) {
           isPaused = false;
           gameLoop();
-          playSound('movement');
+          playSound("movement");
         }
       }
     });
@@ -297,7 +291,7 @@ const mamba_game = (function () {
     if (isPaused == true) {
       return;
     }
-    setTimeout(gameLoop, frameLength);
+    setTimeout(gameLoop, FRAME_LENGTH);
   }
 
   const mamba = (function () {
@@ -314,7 +308,7 @@ const mamba_game = (function () {
     let wallThreshold;
 
     function setWallThreshold() {
-      wallThreshold = random(minWallLength, maxWallLength);
+      wallThreshold = random(MIN_WALL_LENGTH, MAX_WALL_LENGTH);
     }
 
     function getTail() {
@@ -441,7 +435,7 @@ const mamba_game = (function () {
             position[0],
             position[1],
             "wall",
-            random(minWallLifespan, maxWallLifespan),
+            random(MIN_WALL_LIFESPAN, MAX_WALL_LIFESPAN),
           ]);
         });
         wall.addWall(newWallArray);
@@ -500,12 +494,12 @@ const mamba_game = (function () {
   })();
 
   const bronze = (function () {
-    let amount = random(minStartingBronze, maxStartingBronze);
+    let amount = random(MIN_STARTING_BRONZE, MAX_STARTING_BRONZE);
     let bronzePositions = [];
-    let removeIn = random(minBronzeLifespan, maxBronzeLifespan);
+    let removeIn = random(MIN_BRONZE_LIFESPAN, MAX_BRONZE_LIFESPAN);
 
     function setRemoveIn() {
-      removeIn = random(minBronzeLifespan, maxBronzeLifespan);
+      removeIn = random(MIN_BRONZE_LIFESPAN, MAX_BRONZE_LIFESPAN);
     }
 
     for (i = 0; i < amount; i++) {
@@ -549,9 +543,9 @@ const mamba_game = (function () {
     }
 
     function addBronze() {
-      if (bronzePositions.length < maxAmountOfBronze) {
-        bronzeCallsLeft--;
-        let randomPosition = getRandomPosition();
+      if (bronzePositions.length < MAX_AMOUNT_OF_BRONZE) {
+        randomPositionAttemptsLeft--;
+        const randomPosition = getRandomPosition();
         let mambaPositions = mamba.positions;
         let wallPositions = wall.getPositions();
         let silverPositions = silver.positions;
@@ -563,11 +557,12 @@ const mamba_game = (function () {
         ) {
           randomPosition.push("bronze");
           bronzePositions.push(randomPosition);
+          randomPositionAttemptsLeft = RANDOM_POSITION_ATTEMPTS;
         } else {
-          if (bronzeCallsLeft > 0) {
+          if (randomPositionAttemptsLeft > 0) {
             addBronze();
           } else {
-            bronzeCallsLeft = 10;
+            randomPositionAttemptsLeft = RANDOM_POSITION_ATTEMPTS;
           }
         }
       }
@@ -610,9 +605,8 @@ const mamba_game = (function () {
     let endFrame;
 
     function addGold() {
-      goldCallsLeft--;
+      randomPositionAttemptsLeft--;
       let randomPosition = getRandomPosition();
-      randomPosition.push("gold");
       let mambaPositions = mamba.positions;
       let wallPositions = wall.getPositions();
       let bronzePositions = bronze.positions;
@@ -623,19 +617,21 @@ const mamba_game = (function () {
         !checkCoordinateInArray(randomPosition, bronzePositions) &&
         !checkCoordinateInArray(randomPosition, silverPositions)
       ) {
+        randomPosition.push("gold");
         goldPosition = randomPosition;
-        lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks);
+        lifeSpan = random(MIN_GOLD_LIFESPAN_IN_TICKS, MAX_GOLD_LIFESPAN_IN_TICKS);
+        randomPositionAttemptsLeft = RANDOM_POSITION_ATTEMPTS;
       } else {
-        if (goldCallsLeft > 0) {
+        if (randomPositionAttemptsLeft > 0) {
           addGold();
         } else {
-          goldCallsLeft = 20;
+          randomPositionAttemptsLeft = RANDOM_POSITION_ATTEMPTS;
         }
       }
     }
 
     function setLifeSpan() {
-      lifeSpan = random(minGoldLifespanInTicks, maxGoldLifespanInTicks);
+      lifeSpan = random(MIN_GOLD_LIFESPAN_IN_TICKS, MAX_GOLD_LIFESPAN_IN_TICKS);
     }
 
     function startGoldDecay() {

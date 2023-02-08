@@ -186,12 +186,12 @@ body {
 
 .loading-screen h1 {
   color: #ffff55;
-  font-size: 20vw;
+  font-size: 320px;
 }
 
 .start-instructions {
   color: #eee;
-  font-size: 2vw;
+  font-size: 32px;
 }
 
 .loading-screen.hidden {
@@ -472,5 +472,13 @@ body {
 
   .footer {
     width: 58vw;
+  }
+
+  .loading-screen h1 {
+    font-size: 20vw;
+  }
+
+  .start-instructions {
+    font-size: 2vw;
   }
 }
